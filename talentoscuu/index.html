@@ -213,7 +213,7 @@ $('#fLogin').onsubmit = async e => {
 };
 $('#fSignup').onsubmit = async e => {
   e.preventDefault(); const f = e.target;
-  const { data, error } = await sb.auth.signUp({ email: f.email.value.trim(), password: f.pass.value, options:{ data:{ nombre: f.nombre.value.trim() } } });
+  const { data, error } = await sb.auth.signUp({ email: f.email.value.trim(), password: f.pass.value, options:{ data:{ nombre: f.nombre.value.trim() }, emailRedirectTo: location.origin + location.pathname } });
   if (error) return authMsg(error.message);
   if (data.session) return entrar(data.user, f.nombre.value.trim());
   $('#fSignup').hidden = true; $('#fLogin').hidden = false;

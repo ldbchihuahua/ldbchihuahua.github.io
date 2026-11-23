@@ -19,6 +19,21 @@ URL: https://ldbchihuahua.github.io/talentoscuu/
 | usuario | Ver dashboards, registrar juegos y marcar pagos |
 | pendiente | Nada hasta que un admin lo active |
 
+## Campos y tarifas
+
+En la pestaña *Tarifas* se define el costo por **campo + número de ampayers**, general o para un torneo específico. Al registrar un juego el costo se llena así:
+
+1. Tarifa del torneo en ese campo con ese número de ampayers.
+2. Si no hay, tarifa general del campo.
+3. Si tampoco, el costo base del torneo.
+
+El costo siempre se puede editar, también después de guardar el juego (se vuelve a repartir y se conservan los pagos marcados).
+
+## Instalar
+
+- **Android / PC (Chrome o Edge)**: botón *Instalar* arriba a la derecha, o el ícono de instalar en la barra de direcciones.
+- **iPhone / iPad**: en Safari, *Compartir › Agregar a pantalla de inicio* (el botón *Instalar* muestra los pasos).
+
 ## Reparto del ampayeo
 
 El costo se divide entre los peloteros marcados como asistentes. Se reparte en centavos para que la suma cuadre exacto (p. ej. $1,000 entre 6 = 4 × $166.67 + 2 × $166.66).

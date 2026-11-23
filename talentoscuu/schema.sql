@@ -1,6 +1,6 @@
 -- =====================================================================
 -- Talentos CUU · Control de ampayeo y pagos
--- Ejecutar UNA vez en Supabase: SQL Editor > New query > pegar > Run
+-- Ejecutar en Supabase (se puede volver a correr sin perder datos): SQL Editor > New query > pegar > Run
 -- Proyecto: https://muackgffpnpdojzhduuk.supabase.co
 -- Todas las tablas llevan prefijo tc_ para no chocar con otras apps.
 -- =====================================================================
@@ -107,6 +107,28 @@ create table if not exists public.tc_cargos (
 create index if not exists tc_cargos_jugador_idx on public.tc_cargos(jugador_id);
 create index if not exists tc_juegos_torneo_idx on public.tc_juegos(torneo_id);
 
+-- ---------- Campos y tarifas de ampayeo (v2) ----------
+create table if not exists public.tc_campos (
+  id bigint generated always as identity primary key,
+  nombre text not null unique,
+  activo boolean not null default true,
+  creado timestamptz not null default now()
+);
+
+-- Costo por campo y número de ampayers. torneo_id vacío = aplica a cualquier torneo;
+-- si existe una tarifa específica del torneo, esa gana.
+create table if not exists public.tc_tarifas (
+  id bigint generated always as identity primary key,
+  torneo_id bigint references public.tc_torneos(id) on delete cascade,
+  campo_id bigint not null references public.tc_campos(id) on delete cascade,
+  num_ampayers int not null default 1 check (num_ampayers between 1 and 6),
+  costo numeric(10,2) not null default 0,
+  unique nulls not distinct (torneo_id, campo_id, num_ampayers)
+);
+
+alter table public.tc_juegos add column if not exists campo_id bigint references public.tc_campos(id);
+alter table public.tc_juegos add column if not exists num_ampayers int not null default 1;
+
 -- ---------- Seguridad (RLS) ----------
 alter table public.tc_perfiles enable row level security;
 alter table public.tc_torneos enable row level security;
@@ -115,6 +137,8 @@ alter table public.tc_torneo_jugadores enable row level security;
 alter table public.tc_conceptos enable row level security;
 alter table public.tc_juegos enable row level security;
 alter table public.tc_cargos enable row level security;
+alter table public.tc_campos enable row level security;
+alter table public.tc_tarifas enable row level security;
 
 drop policy if exists tc_perfiles_sel on public.tc_perfiles;
 create policy tc_perfiles_sel on public.tc_perfiles for select to authenticated
@@ -130,7 +154,7 @@ create policy tc_perfiles_del on public.tc_perfiles for delete to authenticated
 do $$
 declare t text;
 begin
-  foreach t in array array['tc_torneos','tc_jugadores','tc_torneo_jugadores','tc_conceptos'] loop
+  foreach t in array array['tc_torneos','tc_jugadores','tc_torneo_jugadores','tc_conceptos','tc_campos','tc_tarifas'] loop
     execute format('drop policy if exists %1$s_sel on public.%1$s', t);
     execute format('create policy %1$s_sel on public.%1$s for select to authenticated using (public.tc_es_miembro())', t);
     execute format('drop policy if exists %1$s_adm on public.%1$s', t);
@@ -156,6 +180,15 @@ end $$;
 
 grant execute on function public.tc_registrar(text) to authenticated;
 grant execute on function public.tc_rol(), public.tc_es_admin(), public.tc_es_miembro() to authenticated;
+
+-- Campos y tarifas iniciales (editables en la app, pestaña Tarifas)
+insert into public.tc_campos (nombre) values ('La Villa'), ('Almanza'), ('Deportiva Sur')
+on conflict (nombre) do nothing;
+insert into public.tc_tarifas (torneo_id, campo_id, num_ampayers, costo)
+select null, c.id, v.n, v.costo
+from (values ('La Villa',1,750), ('La Villa',2,1200), ('Almanza',1,550), ('Deportiva Sur',1,450)) as v(campo,n,costo)
+join public.tc_campos c on c.nombre = v.campo
+on conflict do nothing;
 
 -- Concepto de pago inicial (opcional)
 insert into public.tc_conceptos (nombre, descripcion)

@@ -11,6 +11,10 @@ URL: https://ldbchihuahua.github.io/talentoscuu/
 3. **Correo de confirmación** (opcional): en *Authentication › Sign In / Providers › Email* puedes desactivar "Confirm email" para que las cuentas entren sin confirmar por correo.
 4. **Primer acceso**: el primer usuario que se registre con "Solicitar acceso" queda como **admin**. Los siguientes quedan **pendientes** hasta que el admin los activa en la pestaña *Usuarios*.
 
+## Recuperar contraseña
+
+En la pantalla de entrar: *¿Olvidaste tu contraseña?* → llega un correo con un enlace que regresa a la app para crear la contraseña nueva. Requiere en Supabase (*Authentication › URL Configuration*) Site URL `https://ldbchihuahua.github.io/talentoscuu/` y Redirect URL `https://ldbchihuahua.github.io/talentoscuu/**`.
+
 ## Roles
 
 | Rol | Puede |

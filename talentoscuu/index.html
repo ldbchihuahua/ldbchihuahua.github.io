@@ -36,7 +36,7 @@ body{background:var(--soft);color:var(--ink);font-family:var(--body);font-size:1
 .top .who b{font-family:var(--label);letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
 .top .who button{background:none;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:2px 8px;margin-left:6px;cursor:pointer;font:inherit}
 nav{max-width:1100px;margin:10px auto 0;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
-nav button{font-family:var(--label);font-weight:700;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;background:transparent;color:#d9cff2;border:0;padding:9px 14px;border-radius:8px 8px 0 0;cursor:pointer;white-space:nowrap}
+nav button{font-family:var(--label);font-weight:700;font-size:1rem;letter-spacing:.05em;text-transform:uppercase;background:transparent;color:#d9cff2;border:0;padding:9px 11px;border-radius:8px 8px 0 0;cursor:pointer;white-space:nowrap}
 nav button[aria-current="page"]{background:var(--soft);color:var(--purple-deep)}
 main{max-width:1100px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-left)) 40px}
 h2{font-family:var(--label);font-size:1.4rem;letter-spacing:.05em;text-transform:uppercase;color:var(--purple-deep);margin:0 0 12px}
@@ -105,6 +105,83 @@ dialog .bd{padding:16px 18px;max-height:70vh;overflow:auto}
 .install{background:var(--gold);color:#241900;border:0;border-radius:6px;padding:3px 10px;margin-left:6px;cursor:pointer;font-family:var(--label);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .hint{font-size:.85rem;color:var(--purple-deep);background:#ece5fb;border-radius:6px;padding:4px 8px;margin-top:4px;text-transform:none;letter-spacing:0;font-family:var(--body);font-weight:600}
 .hint.base{background:#fdf3dc;color:var(--gold-ink)}
+/* --- UX v2 --- */
+.mlist{display:none}
+.mi{display:block;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:var(--bg);cursor:pointer}
+.mi .r1{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.mi .t{font-weight:700;color:var(--purple-deep)}
+.mi .amt{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mi .amt.warn{color:var(--warn)} .mi .amt.ok{color:var(--ok)}
+.mi .sub{font-size:.88rem;color:var(--muted);margin-top:2px}
+.mi .bar{margin-top:8px}
+.mi .r3{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px}
+.g2{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+.g-campo{display:grid;gap:12px;grid-template-columns:2fr 1fr 2fr}
+.bnav{display:none}
+.sheet{display:grid;gap:8px}
+.sheet button{text-align:left;font-family:var(--label);font-weight:700;font-size:1.1rem;letter-spacing:.05em;text-transform:uppercase;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:14px 16px;color:var(--purple-deep);cursor:pointer}
+.loading{display:flex;align-items:center;gap:10px;color:var(--muted);padding:40px 0;justify-content:center}
+.loading::before{content:"";width:22px;height:22px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--purple);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stickybar{position:sticky;bottom:0;z-index:5;background:var(--bg);border-top:1px solid var(--line);margin:14px -16px -16px;padding:10px 16px;border-radius:0 0 10px 10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 -6px 16px rgba(30,15,70,.06)}
+.stickybar .sum{display:flex;gap:14px;flex-wrap:wrap;align-items:baseline;flex:1}
+.stickybar .sum b{font-size:1.15rem;font-variant-numeric:tabular-nums}
+.stickybar .btn{margin-left:auto}
+.search{display:flex;gap:8px;align-items:center;margin-top:8px}
+.search input{flex:1}
+details.more{margin-top:12px}
+details.more summary{cursor:pointer;color:var(--purple);font-family:var(--label);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.9rem}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{font-family:var(--label);font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:.85rem;border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:999px;padding:4px 12px;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--purple);border-color:var(--purple);color:#fff}
+.wa{background:#1f9d55;border-color:#1f9d55;color:#fff}
+.steps{counter-reset:s;list-style:none;padding:0;margin:8px 0 0;display:grid;gap:8px}
+.steps li{display:flex;gap:12px;align-items:center;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.steps li::before{counter-increment:s;content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--purple);color:#fff;display:grid;place-items:center;font-weight:700;flex:none}
+.steps li.done{opacity:.6}.steps li.done::before{content:"✓";background:var(--ok)}
+.steps li .btn{margin-left:auto}
+.paybox{width:26px;height:26px}
+@media (max-width:700px){
+  nav{display:none}
+  .top{padding-bottom:10px}
+  .bnav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--bg);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0);box-shadow:0 -4px 14px rgba(30,15,70,.08)}
+  .bnav button{background:none;border:0;padding:8px 2px 7px;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--label);font-weight:700;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);cursor:pointer}
+  .bnav svg{width:24px;height:24px}
+  .bnav button[aria-current="page"]{color:var(--purple)}
+  .bnav button.plus span.ic{background:var(--purple);color:#fff;border-radius:12px;padding:2px 14px}
+  main{padding-bottom:96px}
+  .stickybar{bottom:calc(58px + env(safe-area-inset-bottom,0px));flex-wrap:nowrap;gap:8px}
+  .stickybar .sum{gap:8px;font-size:.9rem;flex-wrap:nowrap;white-space:nowrap;overflow:hidden}
+  .stickybar .sum b{font-size:1rem}
+  .stickybar .btn{padding:8px 12px;white-space:nowrap}
+  .stickybar .sum .tl{display:none}
+  .mlist{display:block}
+  table.desk{display:none}
+  .g-campo{grid-template-columns:1fr 84px}
+  .g-campo label:last-child{grid-column:1/-1}
+  .card{padding:14px}
+  #dlg{max-width:100vw;width:100vw;height:100dvh;max-height:100dvh;margin:0;border-radius:0}
+  #dlg .bd{max-height:calc(100dvh - 62px)}
+  .kpis{grid-template-columns:1fr 1fr}
+  .kpis dd{font-size:1.15rem}
+  /* Tablas anchas se vuelven tarjetas */
+  table.resp thead{display:none}
+  table.resp tbody tr{display:block;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:8px;background:var(--bg)}
+  table.resp tbody tr.click:hover td{background:none}
+  table.resp td{display:flex;justify-content:space-between;gap:12px;border:0;padding:3px 0;text-align:right}
+  table.resp td::before{content:attr(data-label);font-family:var(--label);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.78rem;color:var(--muted);text-align:left}
+  table.resp td:first-child{font-weight:700;font-size:1.02rem;color:var(--purple-deep);text-align:left;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:4px}
+  table.resp td:first-child::before{display:none}
+  table.resp td:empty{display:none}
+  table.resp td[data-label=""]::before{display:none}
+  table.resp td[data-label=""]{justify-content:flex-end}
+  table.resp tfoot tr{display:block;border:2px solid var(--purple);border-radius:10px;padding:8px 12px}
+  table.resp tfoot td{display:flex;justify-content:space-between;border:0;padding:3px 0}
+  table.resp tfoot td::before{content:attr(data-label);font-family:var(--label);font-size:.78rem;text-transform:uppercase;color:var(--muted)}
+  table.resp tfoot td:empty{display:none}
+  .scroll{overflow:visible}
+  .filters label{flex:1}
+}
 @media (max-width:600px){.top h1{font-size:1rem}.top .who span{display:none}}
 </style>
 </head>
@@ -133,7 +210,14 @@ dialog .bd{padding:16px 18px;max-height:70vh;overflow:auto}
       <label>Correo<input type="email" name="email" autocomplete="username" required></label>
       <label>Contraseña<input type="password" name="pass" autocomplete="current-password" required minlength="6"></label>
       <button class="btn primary">Entrar</button>
+      <p class="small" style="margin:0;text-align:center"><button type="button" class="linkish" data-auth="forgot">¿Olvidaste tu contraseña?</button></p>
       <p class="small muted" style="margin:0">¿No tienes cuenta? <button type="button" class="linkish" data-auth="signup">Solicitar acceso</button></p>
+    </form>
+    <form id="fForgot" hidden>
+      <p class="small" style="margin:0">Escribe tu correo y te enviaremos un enlace para crear una contraseña nueva.</p>
+      <label>Correo<input type="email" name="email" autocomplete="username" required></label>
+      <button class="btn primary">Enviar enlace</button>
+      <p class="small muted" style="margin:0"><button type="button" class="linkish" data-auth="login">Volver a entrar</button></p>
     </form>
     <form id="fSignup" hidden>
       <label>Nombre<input name="nombre" required></label>
@@ -141,6 +225,21 @@ dialog .bd{padding:16px 18px;max-height:70vh;overflow:auto}
       <label>Contraseña<input type="password" name="pass" autocomplete="new-password" required minlength="6"></label>
       <button class="btn primary">Crear cuenta</button>
       <p class="small muted" style="margin:0">Un administrador debe activar tu cuenta. <button type="button" class="linkish" data-auth="login">Ya tengo cuenta</button></p>
+    </form>
+  </div>
+</section>
+
+<!-- Nueva contraseña (al volver del correo de recuperación) -->
+<section id="vReset" class="auth" hidden>
+  <img class="logo" src="../equipos/talentos.png" alt="">
+  <h1>Nueva contraseña</h1>
+  <div class="card">
+    <div id="resetMsg"></div>
+    <form id="fReset">
+      <label>Contraseña nueva<input type="password" name="pass" autocomplete="new-password" required minlength="6"></label>
+      <label>Confírmala<input type="password" name="pass2" autocomplete="new-password" required minlength="6"></label>
+      <p class="small muted" style="margin:0">Mínimo 6 caracteres.</p>
+      <button class="btn primary">Guardar contraseña</button>
     </form>
   </div>
 </section>
@@ -174,8 +273,15 @@ dialog .bd{padding:16px 18px;max-height:70vh;overflow:auto}
     </nav>
   </header>
   <main id="main"></main>
+  <nav class="bnav" id="bnav" aria-label="Navegación">
+    <button data-tab="dash"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>Dashboard</button>
+    <button data-tab="nuevo" class="plus"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>Juego</button>
+    <button data-tab="juegos"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span>Juegos</button>
+    <button data-tab="mas"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></span>Más</button>
+  </nav>
 </div>
 
+<dialog id="cdlg" style="width:min(420px,92vw);max-width:92vw;height:fit-content;max-height:90vh;margin:auto;border-radius:12px"><div class="bd" style="padding:20px"><p id="cMsg" style="margin:0 0 16px;white-space:pre-line"></p><div class="actions" style="justify-content:flex-end"><button class="btn" id="cNo">Cancelar</button><button class="btn primary" id="cSi">Sí, continuar</button></div></div></dialog>
 <dialog id="dlg"><div class="hd"><h2 id="dlgTitle"></h2><button class="btn sm" onclick="dlg.close()">Cerrar</button></div><div class="bd" id="dlgBody"></div></dialog>
 
 <script>
@@ -191,7 +297,7 @@ const today = () => { const d = new Date(); d.setMinutes(d.getMinutes()-d.getTim
 const fdate = s => s ? new Date(s+'T12:00:00').toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'}) : '';
 const pct = (a,b) => b>0 ? Math.round(a*100/b) : 0;
 function toast(t){ const d=document.createElement('div'); d.className='toast'; d.textContent=t; document.body.append(d); setTimeout(()=>d.remove(),2200); }
-function show(id){ ['vSetup','vAuth','vPend','vApp'].forEach(v=>$('#'+v).hidden = v!==id); }
+function show(id){ ['vSetup','vAuth','vReset','vPend','vApp'].forEach(v=>$('#'+v).hidden = v!==id); }
 
 let sb, me = null, rol = null, tab = 'dash';
 const S = { torneos:[], jugadores:[], conceptos:[], roster:[], juegos:[], cargos:[], campos:[], tarifas:[] };
@@ -204,9 +310,37 @@ $('#fSetup').onsubmit = e => { e.preventDefault(); try{ localStorage.setItem('tc
 async function boot(){
   if (!key()) return show('vSetup');
   sb = supabase.createClient(SUPABASE_URL, key());
+  let recuperando = esRecuperacion;
+  sb.auth.onAuthStateChange(ev => { if (ev === 'PASSWORD_RECOVERY') { recuperando = true; show('vReset'); } });
   const { data:{ session } } = await sb.auth.getSession();
-  if (session) await entrar(session.user); else show('vAuth');
+  if (recuperando || esRecuperacion) { if (session) return show('vReset'); show('vAuth'); return authMsg('El enlace para cambiar la contraseña ya no es válido. Pide uno nuevo.'); }
+  if (session) await entrar(session.user); else { show('vAuth'); if (linkVencido) authMsg('El enlace ya venció o ya se usó. Pide uno nuevo con «¿Olvidaste tu contraseña?».'); }
 }
+// Se lee antes de que Supabase limpie la dirección
+const esRecuperacion = /type=recovery/.test(location.hash + location.search);
+const linkVencido = /error_code=otp_expired|error=access_denied/.test(location.hash);
+if (linkVencido) history.replaceState(null, '', location.pathname);
+
+$('#fForgot').onsubmit = async e => {
+  e.preventDefault(); const f = e.target, btn = f.querySelector('button.primary'); btn.disabled = true;
+  const { error } = await sb.auth.resetPasswordForEmail(f.email.value.trim(), { redirectTo: location.origin + location.pathname });
+  btn.disabled = false;
+  if (error) return authMsg(/rate|seconds/i.test(error.message) ? 'Espera un minuto antes de pedir otro enlace.' : error.message);
+  $('#fForgot').hidden = true; $('#fLogin').hidden = false;
+  authMsg('Listo. Si el correo está registrado, te llegará un enlace para crear tu contraseña nueva. Revisa también spam.', true);
+};
+$('#fReset').onsubmit = async e => {
+  e.preventDefault(); const f = e.target;
+  const msg = (t, ok) => $('#resetMsg').innerHTML = `<div class="msg ${ok?'ok':'err'}">${esc(t)}</div>`;
+  if (f.pass.value.length < 6) return msg('La contraseña debe tener al menos 6 caracteres.');
+  if (f.pass.value !== f.pass2.value) return msg('Las contraseñas no coinciden.');
+  const btn = f.querySelector('button.primary'); btn.disabled = true;
+  const { data, error } = await sb.auth.updateUser({ password: f.pass.value });
+  btn.disabled = false;
+  if (error) return msg(/different|same/i.test(error.message) ? 'Usa una contraseña distinta a la anterior.' : error.message);
+  history.replaceState(null, '', location.pathname); f.reset();
+  toast('Contraseña actualizada'); entrar(data.user);
+};
 
 async function entrar(user, nombre){
   me = user;
@@ -217,12 +351,15 @@ async function entrar(user, nombre){
   $('#whoName').textContent = user.email; $('#whoRol').textContent = rol;
   document.querySelectorAll('nav .adm').forEach(b => b.hidden = !isAdmin());
   show('vApp');
+  main().innerHTML = '<div class="loading">Cargando…</div>';
   await cargar();
   go(tab);
 }
 
 function authMsg(t, ok){ $('#authMsg').innerHTML = t ? `<div class="msg ${ok?'ok':'err'}">${esc(t)}</div>` : ''; }
-document.querySelectorAll('[data-auth]').forEach(b => b.onclick = () => { const s = b.dataset.auth==='signup'; $('#fLogin').hidden = s; $('#fSignup').hidden = !s; authMsg(''); });
+document.querySelectorAll('[data-auth]').forEach(b => b.onclick = () => { const m = b.dataset.auth;
+  $('#fLogin').hidden = m!=='login'; $('#fSignup').hidden = m!=='signup'; $('#fForgot').hidden = m!=='forgot'; authMsg('');
+  if (m==='forgot') { $('#fForgot').email.value = $('#fLogin').email.value; $('#fForgot').email.focus(); } });
 
 $('#fLogin').onsubmit = async e => {
   e.preventDefault(); const f = e.target;
@@ -283,17 +420,54 @@ function resumen(cargos){
 }
 
 // ---------- Navegación ----------
-document.querySelectorAll('#nav button').forEach(b => b.onclick = () => go(b.dataset.tab));
+document.querySelectorAll('#nav button, #bnav button').forEach(b => b.onclick = () => b.dataset.tab==='mas' ? menuMas() : go(b.dataset.tab));
+const ADMIN_TABS = [['torneos','Torneos / ligas'],['campos','Campos'],['tarifas','Tarifas de ampayeo'],['jugadores','Jugadores'],['conceptos','Conceptos de pago'],['usuarios','Usuarios']];
+function menuMas(){
+  $('#dlgTitle').textContent = 'Más opciones';
+  $('#dlgBody').innerHTML = `<div class="sheet">${isAdmin()?ADMIN_TABS.map(([t,l])=>`<button data-go="${t}">${l}</button>`).join(''):''}
+    ${$('#btnInstall').hidden?'':'<button data-go="__install">Instalar la app</button>'}
+    <button data-go="__salir">Salir (${esc(me?.email||'')})</button></div>`;
+  $('#dlgBody').querySelectorAll('[data-go]').forEach(b => b.onclick = () => { dlg.close(); const t = b.dataset.go;
+    if (t==='__salir') logout(); else if (t==='__install') $('#btnInstall').click(); else go(t); });
+  dlg.onclose = null; dlg.showModal();
+}
 function go(t){
   if (!isAdmin() && ['torneos','campos','tarifas','jugadores','conceptos','usuarios'].includes(t)) t = 'dash';
   tab = t;
-  document.querySelectorAll('#nav button').forEach(b => { if (b.dataset.tab===t) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  document.querySelectorAll('#nav button, #bnav button').forEach(b => { const on = b.dataset.tab===t || (b.dataset.tab==='mas' && ADMIN_TABS.some(x=>x[0]===t)); if (on) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  scrollTo(0,0);
   ({ campos:vCampos, tarifas:vTarifas, dash:vDash, nuevo:vNuevo, juegos:vJuegos, torneos:vTorneos, jugadores:vJugadores, conceptos:vConceptos, usuarios:vUsuarios })[t]();
 }
 const main = () => $('#main');
 
+// ---------- WhatsApp ----------
+function compartir(texto){
+  const url = 'https://wa.me/?text=' + encodeURIComponent(texto);
+  if (navigator.share && matchMedia('(pointer:coarse)').matches) navigator.share({ text:texto }).catch(()=>{});
+  else { const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; document.body.append(a); a.click(); a.remove(); }
+}
+function txtJuego(g){
+  const cs = S.cargos.filter(c=>c.juego_id===g.id).sort((a,b)=>jName(a.jugador_id).localeCompare(jName(b.jugador_id)));
+  const r = resumen(cs), pend = cs.filter(c=>!c.pagado), pag = cs.filter(c=>c.pagado);
+  return [`⚾ *TALENTOS CUU · ${cName(g.concepto_id)!=='—'?cName(g.concepto_id):'AMPAYEO'}*`,
+    `${fdate(g.fecha).toUpperCase()} vs ${g.rival}`,
+    `${tName(g.torneo_id)}${g.campo_id?' · '+campoName(g.campo_id)+' · '+(g.num_ampayers||1)+' AMPAYER'+((g.num_ampayers||1)>1?'S':''):''}`,
+    `Total ${money(r.total)} · ${cs.length} asistentes · ${money(cs.length?r.total/cs.length:0)} c/u`, '',
+    pend.length ? `⏳ *Pendientes (${money(r.pendiente)}):*\n` + pend.map(c=>`• ${jName(c.jugador_id)} ${money(c.monto)}`).join('\n') : '✅ *Todos pagaron*',
+    pag.length && pend.length ? `\n✅ Pagaron: ${pag.map(c=>jName(c.jugador_id)).join(', ')}` : ''].join('\n').trim();
+}
+function txtAdeudos(tid){
+  const ids = new Set(S.juegos.filter(g=>!tid || g.torneo_id===tid).map(g=>g.id));
+  const deuda = new Map();
+  S.cargos.filter(c=>ids.has(c.juego_id) && !c.pagado).forEach(c => deuda.set(c.jugador_id, (deuda.get(c.jugador_id)||0) + Number(c.monto)));
+  const filas = [...deuda.entries()].sort((a,b)=>b[1]-a[1]);
+  const tot = filas.reduce((s,x)=>s+x[1],0);
+  return [`⚾ *TALENTOS CUU · Adeudos de ampayeo*`, tid ? tName(tid) : 'Todos los torneos', `Corte al ${fdate(today()).toUpperCase()}`, '',
+    filas.length ? filas.map(([j,m])=>`• ${jName(j)}: ${money(m)}`).join('\n') + `\n\n*Total pendiente: ${money(tot)}*` : '✅ Nadie tiene adeudos'].join('\n');
+}
+
 // ---------- Dashboard ----------
-let dashTorneo = '';
+let dashTorneo = '', soloDeuda = true;
 function vDash(){
   const opts = S.torneos.map(t => `<option value="${t.id}" ${String(t.id)===dashTorneo?'selected':''}>${esc(t.nombre)}</option>`).join('');
   main().innerHTML = `
@@ -313,7 +487,18 @@ function renderDash(){
   const r = resumen(cargos);
   const deudores = new Set(cargos.filter(c=>!c.pagado).map(c=>c.jugador_id)).size;
 
-  let html = `<h2>${tid ? esc(tName(tid)) : 'Consolidado global'}</h2>
+  let html = '';
+  if (!S.juegos.length) {
+    const pasos = [
+      [S.torneos.length>0, 'Da de alta tu torneo o liga', 'torneos'],
+      [S.roster.length>0, 'Agrega a los peloteros del torneo', 'torneos'],
+      [S.tarifas.length>0, 'Revisa las tarifas por campo (opcional)', 'tarifas'],
+      [false, 'Registra tu primer juego', 'nuevo']];
+    html += `<div class="card"><h2>Para empezar</h2>${isAdmin()
+      ? `<ol class="steps">${pasos.map(([ok,txt,t])=>`<li class="${ok?'done':''}"><span>${txt}</span>${ok?'':`<button class="btn sm" data-goto="${t}">Ir</button>`}</li>`).join('')}</ol>`
+      : '<p>Todavía no hay juegos registrados. Toca <b>Juego</b> para capturar el primero.</p>'}</div>`;
+  }
+  html += `<div class="actions" style="margin:0 0 10px;justify-content:space-between"><h2 style="margin:0">${tid ? esc(tName(tid)) : 'Consolidado global'}</h2>${r.pendiente>0?'<button class="btn wa sm" id="waDeuda">Compartir adeudos</button>':''}</div>
     <dl class="kpis">
       <div><dt>Juegos</dt><dd>${juegos.length}</dd></div>
       <div><dt>Total ampayeo</dt><dd>${money(r.total)}</dd></div>
@@ -329,7 +514,10 @@ function renderDash(){
       const gs = S.juegos.filter(g=>g.torneo_id===t.id), ids = new Set(gs.map(g=>g.id));
       return { t, n: gs.length, ...resumen(S.cargos.filter(c=>ids.has(c.juego_id))) };
     }).filter(f => f.n > 0 || f.t.activo);
-    html += `<div class="card"><h3 style="margin-top:0">Consolidado por torneo / liga</h3><div class="scroll"><table>
+    html += `<div class="card"><h3 style="margin-top:0">Consolidado por torneo / liga</h3>
+      <div class="mlist">${filas.map(f => `<div class="mi" data-t="${f.t.id}"><div class="r1"><span class="t">${esc(f.t.nombre)}</span>${f.pendiente>0.004?`<span class="amt warn">${money(f.pendiente)}</span>`:'<span class="pill ok">Al corriente</span>'}</div>
+        <div class="sub">${f.n} juegos · cobrado ${money(f.pagado)} de ${money(f.total)}</div><div class="bar"><i style="width:${pct(f.pagado,f.total)}%"></i></div></div>`).join('')}</div>
+      <div class="scroll"><table class="desk">
       <thead><tr><th>Torneo / liga</th><th>Tipo</th><th class="num">Ampayeo</th><th class="num">Juegos</th><th class="num">Total</th><th class="num">Cobrado</th><th class="num">Por cobrar</th><th>Avance</th></tr></thead><tbody>
       ${filas.map(f => `<tr class="click" data-t="${f.t.id}"><td><b>${esc(f.t.nombre)}</b></td><td>${f.t.tipo}</td><td class="num">${money(f.t.costo_ampayeo)}</td><td class="num">${f.n}</td><td class="num">${money(f.total)}</td><td class="num">${money(f.pagado)}</td><td class="num">${money(f.pendiente)}</td><td><div class="bar"><i style="width:${pct(f.pagado,f.total)}%"></i></div></td></tr>`).join('') || '<tr><td colspan="8" class="muted">Sin torneos todavía.</td></tr>'}
       </tbody><tfoot><tr><td colspan="3">Total</td><td class="num">${juegos.length}</td><td class="num">${money(r.total)}</td><td class="num">${money(r.pagado)}</td><td class="num">${money(r.pendiente)}</td><td></td></tr></tfoot></table></div></div>`;
@@ -338,17 +526,23 @@ function renderDash(){
   // Por jugador
   const porJ = new Map();
   cargos.forEach(c => { const o = porJ.get(c.jugador_id) || { juegos:0, total:0, pagado:0 }; o.juegos++; o.total += Number(c.monto); if (c.pagado) o.pagado += Number(c.monto); porJ.set(c.jugador_id, o); });
-  const filasJ = [...porJ.entries()].map(([id,o]) => ({ id, ...o, pend: o.total-o.pagado })).sort((a,b)=> b.pend-a.pend || jName(a.id).localeCompare(jName(b.id)));
-  html += `<div class="card"><h3 style="margin-top:0">Estado de cuenta por pelotero</h3><p class="small muted" style="margin:0 0 8px">Toca un pelotero para ver sus juegos y marcar pagos.</p><div class="scroll"><table>
+  const filasJ = [...porJ.entries()].map(([id,o]) => ({ id, ...o, pend: o.total-o.pagado })).filter(f => !soloDeuda || f.pend > 0.004).sort((a,b)=> b.pend-a.pend || jName(a.id).localeCompare(jName(b.id)));
+  html += `<div class="card"><h3 style="margin-top:0">Estado de cuenta por pelotero</h3><div class="chips" style="margin-bottom:8px"><button type="button" data-deuda="1" aria-pressed="${soloDeuda}">Con adeudo</button><button type="button" data-deuda="0" aria-pressed="${!soloDeuda}">Todos</button></div><p class="small muted" style="margin:0 0 8px">Toca un pelotero para ver sus juegos y marcar pagos.</p>
+    <div class="mlist">${filasJ.map(f => `<div class="mi" data-j="${f.id}"><div class="r1"><span class="t">${esc(jName(f.id))}</span>${f.pend<=0.004?'<span class="pill ok">Al corriente</span>':`<span class="amt warn">Debe ${money(f.pend)}</span>`}</div>
+      <div class="sub">${f.juegos} juego${f.juegos>1?'s':''} · pagó ${money(f.pagado)} de ${money(f.total)}</div></div>`).join('') || `<p class="muted">${soloDeuda && porJ.size ? '✅ Nadie debe. ¡Todo cobrado!' : 'Sin cargos registrados.'}</p>`}</div>
+    <div class="scroll"><table class="desk">
     <thead><tr><th>Pelotero</th><th class="num">Juegos</th><th class="num">Cargado</th><th class="num">Pagado</th><th class="num">Debe</th><th>Estatus</th></tr></thead><tbody>
-    ${filasJ.map(f => `<tr class="click" data-j="${f.id}"><td>${esc(jName(f.id))}</td><td class="num">${f.juegos}</td><td class="num">${money(f.total)}</td><td class="num">${money(f.pagado)}</td><td class="num">${money(f.pend)}</td><td>${f.pend<=0.004?'<span class="pill ok">Al corriente</span>':f.pagado>0?'<span class="pill mid">Parcial</span>':'<span class="pill warn">Debe</span>'}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">Sin cargos registrados.</td></tr>'}
+    ${filasJ.map(f => `<tr class="click" data-j="${f.id}"><td>${esc(jName(f.id))}</td><td class="num">${f.juegos}</td><td class="num">${money(f.total)}</td><td class="num">${money(f.pagado)}</td><td class="num">${money(f.pend)}</td><td>${f.pend<=0.004?'<span class="pill ok">Al corriente</span>':f.pagado>0?'<span class="pill mid">Parcial</span>':'<span class="pill warn">Debe</span>'}</td></tr>`).join('') || `<tr><td colspan="6" class="muted">${soloDeuda && porJ.size ? '✅ Nadie debe. ¡Todo cobrado!' : 'Sin cargos registrados.'}</td></tr>`}
     </tbody></table></div></div>`;
 
   if (tid) html += `<div class="card"><h3 style="margin-top:0">Juegos del torneo</h3>${tablaJuegos(juegos)}</div>`;
 
   $('#dashBody').innerHTML = html;
-  $('#dashBody').querySelectorAll('tr[data-t]').forEach(tr => tr.onclick = () => { dashTorneo = tr.dataset.t; vDash(); });
-  $('#dashBody').querySelectorAll('tr[data-j]').forEach(tr => tr.onclick = () => cuentaJugador(Number(tr.dataset.j), tid));
+  $('#dashBody').querySelectorAll('[data-t]').forEach(tr => tr.onclick = () => { dashTorneo = tr.dataset.t; vDash(); });
+  $('#dashBody').querySelectorAll('[data-deuda]').forEach(b => b.onclick = () => { soloDeuda = b.dataset.deuda==='1'; renderDash(); });
+  $('#dashBody').querySelectorAll('[data-goto]').forEach(b => b.onclick = () => go(b.dataset.goto));
+  $('#waDeuda')?.addEventListener('click', () => compartir(txtAdeudos(tid)));
+  $('#dashBody').querySelectorAll('[data-j]').forEach(tr => tr.onclick = () => cuentaJugador(Number(tr.dataset.j), tid));
   bindJuegos($('#dashBody'));
 }
 
@@ -362,7 +556,8 @@ function cuentaJugador(jid, tid){
       <div class="scroll"><table><thead><tr><th>Fecha</th><th>Torneo</th><th>Rival</th><th class="num">Monto</th><th>Pagado</th></tr></thead><tbody>
       ${cs.map(c => { const g = juegos.get(c.juego_id); return `<tr><td>${fdate(g.fecha)}</td><td>${esc(tName(g.torneo_id))}</td><td>vs ${esc(g.rival)}</td><td class="num">${money(c.monto)}</td><td><input type="checkbox" class="paybox" data-c="${c.id}" ${c.pagado?'checked':''}></td></tr>`; }).join('')}
       </tbody></table></div>
-      ${r.pendiente>0 ? `<div class="actions"><button class="btn primary" id="payAll">Marcar todo como pagado</button></div>` : ''}`;
+      <div class="actions">${r.pendiente>0 ? '<button class="btn primary" id="payAll">Marcar todo como pagado</button>' : '<span class="pill ok">Al corriente</span>'}${r.pendiente>0?'<button class="btn wa" id="waJ">Enviar recordatorio</button>':''}</div>`;
+    $('#waJ')?.addEventListener('click', () => compartir([`⚾ *TALENTOS CUU · Ampayeo*`, `Hola, te compartimos el adeudo de *${jName(jid)}*:`, '', ...cs.filter(c=>!c.pagado).map(c=>{ const g = juegos.get(c.juego_id); return `• ${fdate(g.fecha).toUpperCase()} vs ${g.rival}: ${money(c.monto)}`; }), '', `*Total: ${money(r.pendiente)}*`, '¡Gracias!'].join('\n')));
     $('#dlgBody').querySelectorAll('.paybox').forEach(b => b.onchange = async () => { await setPagado([Number(b.dataset.c)], b.checked); render(); });
     $('#payAll')?.addEventListener('click', async () => { await setPagado(cs.filter(c=>!c.pagado).map(c=>c.id), true); render(); });
   };
@@ -383,23 +578,32 @@ function vNuevo(){
   if (!activos.length) { main().innerHTML = `<div class="card"><h2>Nuevo juego</h2><p>Primero ${isAdmin()?'da de alta un torneo o liga en la pestaña <b>Torneos</b> y asígnale peloteros':'un administrador debe dar de alta torneos y peloteros'}.</p></div>`; return; }
   const conc = S.conceptos.filter(c=>c.activo);
   const defC = conc.find(c=>/ampay/i.test(c.nombre)) || conc[0];
-  main().innerHTML = `<form class="card" id="fJuego"><h2>Nuevo juego</h2>
-    <div class="grid">
+  main().innerHTML = `<form class="card" id="fJuego" novalidate><h2>Nuevo juego</h2>
+    <div class="g2">
       <label>Fecha<input type="date" name="fecha" value="${today()}" required></label>
-      <label>Torneo / liga<select name="torneo" required>${activos.map(t=>`<option value="${t.id}">${esc(t.nombre)} (${t.tipo})</option>`).join('')}</select></label>
+      <label>Torneo / liga<select name="torneo" required>${activos.map(t=>`<option value="${t.id}">${esc(t.nombre)}</option>`).join('')}</select></label>
+      <label style="grid-column:1/-1">Equipo rival (vs)<input name="rival" required placeholder="EJ. DORADOS" list="dlRivales" autocomplete="off"><datalist id="dlRivales">${[...new Set(S.juegos.map(g=>g.rival))].map(r=>`<option value="${esc(r)}">`).join('')}</datalist></label>
+    </div>
+    <div class="g-campo" style="margin-top:12px">
       <label>Campo<select name="campo"><option value="">— Sin campo —</option>${S.campos.filter(c=>c.activo).map(c=>`<option value="${c.id}">${esc(c.nombre)}</option>`).join('')}</select></label>
       <label>Ampayers<select name="namp">${[1,2,3,4].map(n=>`<option value="${n}">${n}</option>`).join('')}</select></label>
-      <label>Costo de ampayeo (editable)<input type="number" name="costo" min="0" step="0.01" required><span class="hint" id="costoHint"></span></label>
-      <label>Concepto de pago<select name="concepto">${conc.map(c=>`<option value="${c.id}" ${c===defC?'selected':''}>${esc(c.nombre)}</option>`).join('')}<option value="">— Sin concepto —</option></select></label>
-      <label>Equipo rival (vs)<input name="rival" required placeholder="Ej. Dorados"></label>
+      <label>Costo de ampayeo<input type="number" name="costo" min="0" step="0.01" inputmode="decimal" required><span class="hint" id="costoHint"></span></label>
     </div>
-    <h3>Peloteros que asistieron</h3>
-    <div class="actions" style="margin-top:0"><button type="button" class="btn sm" id="selAll">Todos</button><button type="button" class="btn sm" id="selNone">Ninguno</button></div>
+    <details class="more"><summary>Concepto y notas</summary>
+      <div class="grid" style="margin-top:10px">
+        <label>Concepto de pago<select name="concepto">${conc.map(c=>`<option value="${c.id}" ${c===defC?'selected':''}>${esc(c.nombre)}</option>`).join('')}<option value="">— Sin concepto —</option></select></label>
+        <label>Notas<input name="notas" placeholder="OPCIONAL"></label>
+      </div>
+    </details>
+    <h3>¿Quién asistió?</h3>
+    <div class="actions" style="margin-top:0"><button type="button" class="btn sm" id="selAll">Todos</button><button type="button" class="btn sm" id="selNone">Ninguno</button><span class="small muted" id="rosterInfo"></span></div>
+    <div class="search" id="rSearchBox" hidden><input id="rSearch" type="search" placeholder="Buscar pelotero…" autocomplete="off"></div>
     <div class="roster" id="roster"></div>
     ${addPlayerHTML('n')}
-    <div class="split"><span>Asistentes: <b id="nAsis">0</b></span><span>Costo por pelotero: <b id="porJ">—</b></span><span>Total: <b id="tot">—</b></span></div>
-    <label style="margin-top:12px">Notas<textarea name="notas" rows="2"></textarea></label>
-    <div class="actions"><button class="btn primary" id="btnGuardar">Guardar juego</button></div>
+    <div class="stickybar">
+      <div class="sum"><span><b id="nAsis">0</b> asist.</span><span><b id="porJ">—</b> c/u</span><span class="tl">Total <b id="tot">—</b></span></div>
+      <button class="btn primary" id="btnGuardar">Guardar juego</button>
+    </div>
   </form>`;
   const f = $('#fJuego');
   const pintarRoster = (keep) => {
@@ -409,8 +613,11 @@ function vNuevo(){
     $('#roster').innerHTML = js.length ? js.map(j => `<label><input type="checkbox" value="${j.id}" ${on.has(j.id)?'checked':''}> ${j.numero?`<span class="muted">#${esc(j.numero)}</span>`:''} ${esc(j.nombre)}<span class="amt"></span></label>`).join('')
       : `<p class="muted">Este torneo no tiene peloteros asignados. Agrégalos abajo${isAdmin()?' o en <b>Torneos › Peloteros</b>':''}.</p>`;
     $('#roster').querySelectorAll('input').forEach(i => i.onchange = calc);
+    $('#rSearchBox').hidden = js.length < 10; $('#rSearch').value = '';
+    $('#rosterInfo').textContent = js.length ? `${js.length} peloteros en ${t.nombre}` : '';
     calc();
   };
+  $('#rSearch').oninput = e => { const q = e.target.value.trim().toUpperCase(); $('#roster').querySelectorAll('label').forEach(l => l.hidden = q && !l.textContent.toUpperCase().includes(q)); };
   const calc = () => {
     const sel = [...$('#roster').querySelectorAll('input')];
     const on = sel.filter(i=>i.checked), montos = repartir(Number(f.costo.value)||0, on.length);
@@ -428,13 +635,15 @@ function vNuevo(){
   bindAddPlayer('n', () => Number(f.torneo.value), id => { const keep = new Set([...$('#roster').querySelectorAll('input:checked')].map(i=>Number(i.value))); keep.add(id); pintarRoster(keep); });
   f.torneo.onchange = () => pintarRoster(); f.campo.onchange = sugerir; f.namp.onchange = sugerir;
   f.costo.oninput = () => { $('#costoHint').textContent = 'Costo capturado a mano'; $('#costoHint').className = 'hint base'; calc(); };
-  $('#selAll').onclick = () => { $('#roster').querySelectorAll('input').forEach(i=>i.checked=true); calc(); };
+  $('#selAll').onclick = () => { $('#roster').querySelectorAll('label:not([hidden]) input').forEach(i=>i.checked=true); calc(); };
   $('#selNone').onclick = () => { $('#roster').querySelectorAll('input').forEach(i=>i.checked=false); calc(); };
   pintarRoster();
   f.onsubmit = async e => {
     e.preventDefault();
+    if (!f.rival.value.trim()) { toast('Escribe el equipo rival'); return f.rival.focus(); }
+    if (!f.fecha.value) { toast('Pon la fecha del juego'); return f.fecha.focus(); }
     const ids = [...$('#roster').querySelectorAll('input:checked')].map(i=>Number(i.value));
-    if (!ids.length) return toast('Selecciona al menos un pelotero');
+    if (!ids.length) { toast('Marca quién asistió'); return $('#roster').scrollIntoView({behavior:'smooth',block:'center'}); }
     $('#btnGuardar').disabled = true;
     try {
       const costo = Number(f.costo.value)||0;
@@ -485,13 +694,18 @@ function vJuegos(){
 }
 function tablaJuegos(juegos){
   if (!juegos.length) return '<p class="muted">Sin juegos registrados.</p>';
-  return `<div class="scroll"><table><thead><tr><th>Fecha</th><th>Torneo</th><th>Rival</th><th>Campo</th><th>Concepto</th><th class="num">Asist.</th><th class="num">Total</th><th class="num">Cobrado</th><th class="num">Pendiente</th><th></th><th></th></tr></thead><tbody>
+  const ml = `<div class="mlist">${juegos.map(g => { const cs = S.cargos.filter(c=>c.juego_id===g.id), r = resumen(cs);
+    return `<div class="mi" data-g="${g.id}"><div class="r1"><span class="t">${fdate(g.fecha).toUpperCase()} · vs ${esc(g.rival)}</span>${r.pendiente<=0.004?'<span class="pill ok">Liquidado</span>':`<span class="amt warn">${money(r.pendiente)}</span>`}</div>
+      <div class="sub">${esc(tName(g.torneo_id))}${g.campo_id?' · '+esc(campoName(g.campo_id))+' · '+(g.num_ampayers||1)+' amp.':''} · ${cs.length} asist. · ${money(r.total)}</div>
+      <div class="bar"><i style="width:${pct(r.pagado,r.total)}%"></i></div>
+      <div class="r3"><span class="small muted">Cobrado ${money(r.pagado)}</span><span><button class="btn sm" data-ge="${g.id}">Editar</button>${isAdmin()?` <button class="btn sm danger" data-gd="${g.id}">Borrar</button>`:''}</span></div></div>`; }).join('')}</div>`;
+  return ml + `<div class="scroll"><table class="desk"><thead><tr><th>Fecha</th><th>Torneo</th><th>Rival</th><th>Campo</th><th>Concepto</th><th class="num">Asist.</th><th class="num">Total</th><th class="num">Cobrado</th><th class="num">Pendiente</th><th></th><th></th></tr></thead><tbody>
     ${juegos.map(g => { const cs = S.cargos.filter(c=>c.juego_id===g.id), r = resumen(cs);
       return `<tr class="click" data-g="${g.id}"><td>${fdate(g.fecha)}</td><td>${esc(tName(g.torneo_id))}</td><td>vs ${esc(g.rival)}</td><td>${esc(campoName(g.campo_id)||'—')}${g.campo_id?` <span class="muted small">(${g.num_ampayers||1})</span>`:''}</td><td>${esc(g.concepto_id?cName(g.concepto_id):'—')}</td><td class="num">${cs.length}</td><td class="num">${money(r.total)}</td><td class="num">${money(r.pagado)}</td><td class="num">${money(r.pendiente)}</td><td>${r.pendiente<=0.004?'<span class="pill ok">Liquidado</span>':'<span class="pill warn">Pendiente</span>'}</td><td style="white-space:nowrap"><button class="btn sm" data-ge="${g.id}">Editar</button>${isAdmin()?` <button class="btn sm danger" data-gd="${g.id}">Borrar</button>`:''}</td></tr>`; }).join('')}
     </tbody></table></div>`;
 }
 function bindJuegos(root){
-  root.querySelectorAll('tr[data-g]').forEach(tr => tr.onclick = () => verJuego(Number(tr.dataset.g)));
+  root.querySelectorAll('[data-g]').forEach(tr => tr.onclick = () => verJuego(Number(tr.dataset.g)));
   root.querySelectorAll('[data-ge]').forEach(b => b.onclick = e => { e.stopPropagation(); verJuego(Number(b.dataset.ge), 'editar'); });
   root.querySelectorAll('[data-gd]').forEach(b => b.onclick = async e => { e.stopPropagation(); if (await borrarJuego(Number(b.dataset.gd))) { if (tab==='juegos') vJuegos(); else renderDash(); } });
 }
@@ -499,7 +713,7 @@ function bindJuegos(root){
 async function borrarJuego(gid){
   const g = byId(S.juegos, gid); if (!g) return false;
   const pagos = S.cargos.filter(c=>c.juego_id===gid && c.pagado).length;
-  if (!confirm(`¿Eliminar el juego del ${fdate(g.fecha)} vs ${g.rival}?${pagos?`\n\nOjo: tiene ${pagos} pago(s) marcado(s) que también se borrarán.`:''}\n\nNo se puede deshacer.`)) return false;
+  if (!await confirmar(`¿Eliminar el juego del ${fdate(g.fecha)} vs ${g.rival}?${pagos?`\n\nOjo: tiene ${pagos} pago(s) marcado(s) que también se borrarán.`:''}\n\nNo se puede deshacer.`, 'Sí, borrar')) return false;
   await q(sb.from('tc_juegos').delete().eq('id', gid));
   S.juegos = S.juegos.filter(x=>x.id!==gid); S.cargos = S.cargos.filter(c=>c.juego_id!==gid);
   toast('Juego eliminado'); return true;
@@ -518,10 +732,11 @@ function verJuego(gid, modo){
       <div class="scroll"><table><thead><tr><th>Pelotero</th><th class="num">Monto</th><th>Pagado</th></tr></thead><tbody>
       ${cs.map(c=>`<tr><td>${esc(jName(c.jugador_id))}</td><td class="num">${money(c.monto)}</td><td><input type="checkbox" class="paybox" data-c="${c.id}" ${c.pagado?'checked':''}></td></tr>`).join('')}
       </tbody><tfoot><tr><td>Total</td><td class="num">${money(r.total)}</td><td></td></tr></tfoot></table></div>
-      <div class="actions">${r.pendiente>0?'<button class="btn primary" id="payAllG">Marcar todos pagados</button>':''}<button class="btn" id="editG">Editar juego</button>${isAdmin()?'<button class="btn danger" id="delG" style="margin-left:auto">Eliminar juego</button>':''}</div>`;
+      <div class="actions">${r.pendiente>0?'<button class="btn primary" id="payAllG">Marcar todos pagados</button>':''}<button class="btn wa" id="waG">WhatsApp</button><button class="btn" id="editG">Editar</button>${isAdmin()?'<button class="btn danger" id="delG" style="margin-left:auto">Eliminar juego</button>':''}</div>`;
     $('#dlgBody').querySelectorAll('.paybox').forEach(b => b.onchange = async () => { await setPagado([Number(b.dataset.c)], b.checked); render(); });
     $('#payAllG')?.addEventListener('click', async () => { await setPagado(cs.filter(c=>!c.pagado).map(c=>c.id), true); render(); });
     $('#editG').onclick = () => { editando = true; render(); };
+    $('#waG').onclick = () => compartir(txtJuego(g));
     $('#delG')?.addEventListener('click', async () => { if (await borrarJuego(gid)) dlg.close(); });
   };
 
@@ -568,7 +783,7 @@ function verJuego(gid, modo){
       const ids = [...$('#eRoster').querySelectorAll('input:checked')].map(i=>Number(i.value));
       if (!ids.length) return toast('Debe quedar al menos un asistente');
       const quitar = cs.filter(c=>!ids.includes(c.jugador_id));
-      if (quitar.some(c=>c.pagado) && !confirm('Vas a quitar asistentes que ya pagaron; su pago se borrará. ¿Continuar?')) return;
+      if (quitar.some(c=>c.pagado) && !await confirmar('Vas a quitar asistentes que ya pagaron; su pago se borrará. ¿Continuar?')) return;
       $('#eSave').disabled = true;
       try {
         const upd = { fecha:f.fecha.value, torneo_id:Number(f.torneo.value), campo_id:f.campo.value?Number(f.campo.value):null, num_ampayers:Number(f.namp.value),
@@ -616,7 +831,7 @@ function catalogo({ titulo, tabla, campos, columnas, extra }){
     };
     main().querySelectorAll('[data-e]').forEach(b => b.onclick = () => { edit = byId(rows, Number(b.dataset.e)); render(); scrollTo({top:0,behavior:'smooth'}); });
     main().querySelectorAll('[data-d]').forEach(b => b.onclick = async () => {
-      if (!confirm('¿Borrar este registro? No se puede deshacer.')) return;
+      if (!await confirmar('¿Borrar este registro? No se puede deshacer.', 'Sí, borrar')) return;
       const { error } = await sb.from(tabla).delete().eq('id', Number(b.dataset.d));
       if (error) return toast(error.code==='23503' ? 'Tiene juegos registrados; mejor márcalo como inactivo.' : 'Error: '+error.message);
       if (tabla==='tc_campos') S.tarifas = S.tarifas.filter(t=>t.campo_id!==Number(b.dataset.d));
@@ -689,10 +904,25 @@ async function vUsuarios(){
     ${us.map(u=>`<tr><td>${esc(u.nombre||'—')}</td><td>${esc(u.email)}</td><td>${u.id===me.id?`<b>${u.rol}</b> (tú)`:`<select data-u="${u.id}">${['pendiente','usuario','admin'].map(r=>`<option ${u.rol===r?'selected':''}>${r}</option>`).join('')}</select>`}</td><td>${new Date(u.creado).toLocaleDateString('es-MX')}</td><td>${u.id===me.id?'':`<button class="btn sm danger" data-x="${u.id}">Quitar</button>`}</td></tr>`).join('')}
     </tbody></table></div></div>`;
   main().querySelectorAll('select[data-u]').forEach(s => s.onchange = async () => { await q(sb.from('tc_perfiles').update({ rol:s.value }).eq('id', s.dataset.u)); toast('Rol actualizado'); });
-  main().querySelectorAll('[data-x]').forEach(b => b.onclick = async () => { if (!confirm('¿Quitar acceso a este usuario?')) return; await q(sb.from('tc_perfiles').delete().eq('id', b.dataset.x)); vUsuarios(); });
+  main().querySelectorAll('[data-x]').forEach(b => b.onclick = async () => { if (!await confirmar('¿Quitar acceso a este usuario?')) return; await q(sb.from('tc_perfiles').delete().eq('id', b.dataset.x)); vUsuarios(); });
 }
 
 const dlg = $('#dlg');
+function confirmar(msg, si='Sí, continuar'){
+  return new Promise(res => { const c = $('#cdlg'); $('#cMsg').textContent = msg; $('#cSi').textContent = si;
+    const fin = v => { c.close(); res(v); }; $('#cSi').onclick = () => fin(true); $('#cNo').onclick = () => fin(false); c.oncancel = () => res(false); c.showModal(); $('#cNo').focus(); });
+}
+
+// Tablas con más de 3 columnas: en celular se muestran como tarjetas (cada celda con su etiqueta)
+function etiquetarTablas(root){
+  root.querySelectorAll('table:not(.resp):not(.desk)').forEach(t => {
+    const ths = [...t.querySelectorAll('thead th')].map(th => th.textContent.trim());
+    if (ths.length <= 3) return;
+    t.classList.add('resp');
+    t.querySelectorAll('tbody tr, tfoot tr').forEach(tr => { let i = 0; [...tr.children].forEach(td => { td.dataset.label = ths[i] ?? ''; i += Number(td.colSpan)||1; }); });
+  });
+}
+new MutationObserver(() => { etiquetarTablas(document.body); }).observe(document.body, { childList:true, subtree:true });
 
 // ---------- Todo en MAYÚSCULAS (excepto correo y contraseña) ----------
 document.addEventListener('input', e => {

@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Talentos CUU · Ampayeo y pagos</title>
+<meta name="theme-color" content="#3b1d7a">
+<link rel="icon" type="image/png" href="../equipos/talentos.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Graduate&family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#ffffff; --soft:#f6f4fb; --ink:#1a1530; --muted:#625b78; --line:#e4e0ee;
+  --purple:#5a2db4; --purple-deep:#3b1d7a; --gold:#d9a019; --gold-ink:#8a6206;
+  --ok:#1f7a4d; --ok-bg:#e6f4ec; --warn:#a1361f; --warn-bg:#fbeae6;
+  --display:"Graduate","Rockwell","Georgia",serif;
+  --label:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--soft);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;padding-bottom:env(safe-area-inset-bottom,0)}
+[hidden]{display:none!important}
+.top{background:var(--purple-deep);color:#fff;padding:12px max(16px,env(safe-area-inset-left)) 0;padding-top:max(12px,env(safe-area-inset-top))}
+.top .row{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.top img{width:44px;height:44px;border-radius:50%;background:#fff;border:2px solid var(--gold);object-fit:contain}
+.top h1{font-family:var(--display);font-weight:400;font-size:1.25rem;margin:0;line-height:1.1;text-transform:uppercase}
+.top .who{margin-left:auto;text-align:right;font-size:.85rem;opacity:.9}
+.top .who b{font-family:var(--label);letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.top .who button{background:none;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:2px 8px;margin-left:6px;cursor:pointer;font:inherit}
+nav{max-width:1100px;margin:10px auto 0;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+nav button{font-family:var(--label);font-weight:700;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;background:transparent;color:#d9cff2;border:0;padding:9px 14px;border-radius:8px 8px 0 0;cursor:pointer;white-space:nowrap}
+nav button[aria-current="page"]{background:var(--soft);color:var(--purple-deep)}
+main{max-width:1100px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-left)) 40px}
+h2{font-family:var(--label);font-size:1.4rem;letter-spacing:.05em;text-transform:uppercase;color:var(--purple-deep);margin:0 0 12px}
+h3{font-family:var(--label);font-size:1.1rem;letter-spacing:.05em;text-transform:uppercase;color:var(--purple-deep);margin:18px 0 8px}
+.card{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+label{display:flex;flex-direction:column;gap:4px;font-family:var(--label);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem;color:var(--muted)}
+input,select,textarea{font:inherit;font-family:var(--body);text-transform:none;letter-spacing:0;color:var(--ink);padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;min-width:0}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.btn{font-family:var(--label);font-weight:700;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;border-radius:8px;padding:8px 16px;cursor:pointer;border:1px solid var(--purple);background:var(--bg);color:var(--purple)}
+.btn.primary{background:var(--purple);color:#fff}
+.btn.primary:hover{background:var(--purple-deep)}
+.btn.sm{padding:3px 10px;font-size:.9rem}
+.btn.danger{border-color:var(--warn);color:var(--warn)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th{font-family:var(--label);text-transform:uppercase;letter-spacing:.06em;font-size:.82rem;color:var(--muted);text-align:left;border-bottom:2px solid var(--line);padding:6px 8px;white-space:nowrap}
+td{border-bottom:1px solid var(--line);padding:7px 8px;vertical-align:middle}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--soft)}
+tfoot td{font-weight:700;border-top:2px solid var(--line);border-bottom:0}
+.scroll{overflow-x:auto}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.kpis div{background:var(--bg);padding:12px 14px}
+.kpis dt{font-family:var(--label);font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold-ink);font-weight:700}
+.kpis dd{margin:2px 0 0;font-weight:700;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.kpis dd.ok{color:var(--ok)} .kpis dd.warn{color:var(--warn)}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;background:var(--ok)}
+.pill{display:inline-block;font-family:var(--label);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.78rem;border-radius:999px;padding:1px 9px}
+.pill.ok{background:var(--ok-bg);color:var(--ok)} .pill.warn{background:var(--warn-bg);color:var(--warn)} .pill.mid{background:#fdf3dc;color:var(--gold-ink)}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;margin-top:8px}
+.roster label{flex-direction:row;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-family:var(--body);font-weight:600;font-size:.98rem;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer}
+.roster label.on{background:#ece5fb;border-color:var(--purple)}
+.roster input{width:18px;height:18px;accent-color:var(--purple)}
+.roster .amt{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--purple-deep)}
+.paybox{width:22px;height:22px;accent-color:var(--ok);cursor:pointer}
+.split{display:flex;gap:18px;flex-wrap:wrap;align-items:baseline;background:var(--soft);border-radius:8px;padding:10px 14px;margin-top:12px}
+.split b{font-size:1.2rem;font-variant-numeric:tabular-nums}
+.msg{padding:10px 14px;border-radius:8px;margin-bottom:12px}
+.msg.err{background:var(--warn-bg);color:var(--warn)} .msg.ok{background:var(--ok-bg);color:var(--ok)}
+.auth{max-width:400px;margin:40px auto}
+.auth .logo{display:block;width:96px;height:96px;margin:0 auto 10px;border-radius:50%;border:3px solid var(--gold);background:#fff;object-fit:contain}
+.auth h1{font-family:var(--display);font-weight:400;text-align:center;color:var(--purple-deep);text-transform:uppercase;font-size:1.4rem;margin:0 0 16px}
+.auth form{display:grid;gap:12px}
+.linkish{background:none;border:0;color:var(--purple);text-decoration:underline;cursor:pointer;font:inherit;padding:0}
+dialog{border:0;border-radius:12px;padding:0;max-width:min(720px,94vw);width:100%;box-shadow:0 20px 60px rgba(30,15,70,.35)}
+dialog::backdrop{background:rgba(26,21,48,.45)}
+dialog .hd{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+dialog .hd h2{margin:0;font-size:1.25rem}
+dialog .hd button{margin-left:auto}
+dialog .bd{padding:16px 18px;max-height:70vh;overflow:auto}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:8px;font-size:.95rem;z-index:50}
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:14px}
+@media (max-width:600px){.top h1{font-size:1rem}.top .who span{display:none}}
+</style>
+</head>
+<body>
+
+<!-- Configuración inicial (si falta la llave pública) -->
+<section id="vSetup" class="auth" hidden>
+  <img class="logo" src="../equipos/talentos.png" alt="">
+  <h1>Configurar conexión</h1>
+  <div class="card">
+    <p class="small">Pega la <b>anon public key</b> de Supabase (Project Settings › API). Se guarda solo en este navegador.</p>
+    <form id="fSetup" class="auth" style="margin:0">
+      <label>Anon key<textarea id="setupKey" rows="4" required></textarea></label>
+      <button class="btn primary">Guardar</button>
+    </form>
+  </div>
+</section>
+
+<!-- Login -->
+<section id="vAuth" class="auth" hidden>
+  <img class="logo" src="../equipos/talentos.png" alt="Talentos CUU">
+  <h1>Talentos CUU</h1>
+  <div class="card">
+    <div id="authMsg"></div>
+    <form id="fLogin">
+      <label>Correo<input type="email" name="email" autocomplete="username" required></label>
+      <label>Contraseña<input type="password" name="pass" autocomplete="current-password" required minlength="6"></label>
+      <button class="btn primary">Entrar</button>
+      <p class="small muted" style="margin:0">¿No tienes cuenta? <button type="button" class="linkish" data-auth="signup">Solicitar acceso</button></p>
+    </form>
+    <form id="fSignup" hidden>
+      <label>Nombre<input name="nombre" required></label>
+      <label>Correo<input type="email" name="email" autocomplete="username" required></label>
+      <label>Contraseña<input type="password" name="pass" autocomplete="new-password" required minlength="6"></label>
+      <button class="btn primary">Crear cuenta</button>
+      <p class="small muted" style="margin:0">Un administrador debe activar tu cuenta. <button type="button" class="linkish" data-auth="login">Ya tengo cuenta</button></p>
+    </form>
+  </div>
+</section>
+
+<!-- Pendiente de activación -->
+<section id="vPend" class="auth" hidden>
+  <img class="logo" src="../equipos/talentos.png" alt="">
+  <h1>Cuenta pendiente</h1>
+  <div class="card"><p>Tu cuenta ya está registrada. Pide a un administrador que la active y vuelve a entrar.</p>
+  <button class="btn" onclick="logout()">Salir</button></div>
+</section>
+
+<!-- App -->
+<div id="vApp" hidden>
+  <header class="top">
+    <div class="row">
+      <img src="../equipos/talentos.png" alt="">
+      <h1>Talentos CUU<br><small style="font-family:var(--label);letter-spacing:.12em;font-size:.8rem;color:var(--gold)">Ampayeo y pagos</small></h1>
+      <div class="who"><span id="whoName"></span> <b id="whoRol"></b><button onclick="logout()">Salir</button></div>
+    </div>
+    <nav id="nav">
+      <button data-tab="dash">Dashboard</button>
+      <button data-tab="nuevo">Nuevo juego</button>
+      <button data-tab="juegos">Juegos</button>
+      <button data-tab="torneos" class="adm">Torneos</button>
+      <button data-tab="jugadores" class="adm">Jugadores</button>
+      <button data-tab="conceptos" class="adm">Conceptos</button>
+      <button data-tab="usuarios" class="adm">Usuarios</button>
+    </nav>
+  </header>
+  <main id="main"></main>
+</div>
+
+<dialog id="dlg"><div class="hd"><h2 id="dlgTitle"></h2><button class="btn sm" onclick="dlg.close()">Cerrar</button></div><div class="bd" id="dlgBody"></div></dialog>
+
+<script>
+// ====== Configuración ======
+const SUPABASE_URL = 'https://muackgffpnpdojzhduuk.supabase.co';
+const SUPABASE_ANON_KEY = ''; // ← pega aquí la anon public key para que nadie tenga que configurarla
+// ===========================
+
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => (Number(n)||0).toLocaleString('es-MX',{style:'currency',currency:'MXN'});
+const today = () => { const d = new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+const fdate = s => s ? new Date(s+'T12:00:00').toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'}) : '';
+const pct = (a,b) => b>0 ? Math.round(a*100/b) : 0;
+function toast(t){ const d=document.createElement('div'); d.className='toast'; d.textContent=t; document.body.append(d); setTimeout(()=>d.remove(),2200); }
+function show(id){ ['vSetup','vAuth','vPend','vApp'].forEach(v=>$('#'+v).hidden = v!==id); }
+
+let sb, me = null, rol = null, tab = 'dash';
+const S = { torneos:[], jugadores:[], conceptos:[], roster:[], juegos:[], cargos:[] };
+const isAdmin = () => rol === 'admin';
+
+// ---------- Arranque ----------
+function key(){ try { return SUPABASE_ANON_KEY || localStorage.getItem('tc_key') || ''; } catch { return SUPABASE_ANON_KEY; } }
+$('#fSetup').onsubmit = e => { e.preventDefault(); try{ localStorage.setItem('tc_key', $('#setupKey').value.trim()); }catch{} boot(); };
+
+async function boot(){
+  if (!key()) return show('vSetup');
+  sb = supabase.createClient(SUPABASE_URL, key());
+  const { data:{ session } } = await sb.auth.getSession();
+  if (session) await entrar(session.user); else show('vAuth');
+}
+
+async function entrar(user, nombre){
+  me = user;
+  const { data, error } = await sb.rpc('tc_registrar', { p_nombre: nombre || user.user_metadata?.nombre || null });
+  if (error) { show('vAuth'); authMsg('No se pudo leer tu perfil. ¿Ya se ejecutó schema.sql en Supabase? ('+error.message+')'); return; }
+  rol = data;
+  if (rol === 'pendiente') return show('vPend');
+  $('#whoName').textContent = user.email; $('#whoRol').textContent = rol;
+  document.querySelectorAll('nav .adm').forEach(b => b.hidden = !isAdmin());
+  show('vApp');
+  await cargar();
+  go(tab);
+}
+
+function authMsg(t, ok){ $('#authMsg').innerHTML = t ? `<div class="msg ${ok?'ok':'err'}">${esc(t)}</div>` : ''; }
+document.querySelectorAll('[data-auth]').forEach(b => b.onclick = () => { const s = b.dataset.auth==='signup'; $('#fLogin').hidden = s; $('#fSignup').hidden = !s; authMsg(''); });
+
+$('#fLogin').onsubmit = async e => {
+  e.preventDefault(); const f = e.target;
+  const { data, error } = await sb.auth.signInWithPassword({ email: f.email.value.trim(), password: f.pass.value });
+  if (error) return authMsg(error.message === 'Invalid login credentials' ? 'Correo o contraseña incorrectos.' : error.message);
+  entrar(data.user);
+};
+$('#fSignup').onsubmit = async e => {
+  e.preventDefault(); const f = e.target;
+  const { data, error } = await sb.auth.signUp({ email: f.email.value.trim(), password: f.pass.value, options:{ data:{ nombre: f.nombre.value.trim() } } });
+  if (error) return authMsg(error.message);
+  if (data.session) return entrar(data.user, f.nombre.value.trim());
+  $('#fSignup').hidden = true; $('#fLogin').hidden = false;
+  authMsg('Cuenta creada. Revisa tu correo para confirmarla y después entra.', true);
+};
+async function logout(){ await sb.auth.signOut(); me = rol = null; show('vAuth'); }
+
+// ---------- Datos ----------
+async function q(p){ const { data, error } = await p; if (error) { toast('Error: '+error.message); throw error; } return data; }
+async function cargar(){
+  const [t,j,c,r,g,k] = await Promise.all([
+    q(sb.from('tc_torneos').select('*').order('nombre')),
+    q(sb.from('tc_jugadores').select('*').order('nombre')),
+    q(sb.from('tc_conceptos').select('*').order('nombre')),
+    q(sb.from('tc_torneo_jugadores').select('*')),
+    q(sb.from('tc_juegos').select('*').order('fecha',{ascending:false}).order('id',{ascending:false})),
+    q(sb.from('tc_cargos').select('*')),
+  ]);
+  Object.assign(S, { torneos:t, jugadores:j, conceptos:c, roster:r, juegos:g, cargos:k });
+}
+const byId = (arr,id) => arr.find(x => x.id === id);
+const tName = id => byId(S.torneos,id)?.nombre ?? '—';
+const jName = id => byId(S.jugadores,id)?.nombre ?? '—';
+const cName = id => byId(S.conceptos,id)?.nombre ?? '—';
+const rosterOf = tid => S.roster.filter(r => r.torneo_id === tid).map(r => byId(S.jugadores, r.jugador_id)).filter(j => j && j.activo).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+
+// Reparte el total en centavos para que la suma cuadre exacto
+function repartir(total, n){
+  if (!n) return [];
+  const c = Math.round(total*100), base = Math.floor(c/n), resto = c - base*n;
+  return Array.from({length:n}, (_,i) => (base + (i<resto?1:0))/100);
+}
+
+function resumen(cargos){
+  const total = cargos.reduce((s,c)=>s+Number(c.monto),0);
+  const pagado = cargos.filter(c=>c.pagado).reduce((s,c)=>s+Number(c.monto),0);
+  return { total, pagado, pendiente: total-pagado };
+}
+
+// ---------- Navegación ----------
+document.querySelectorAll('#nav button').forEach(b => b.onclick = () => go(b.dataset.tab));
+function go(t){
+  if (!isAdmin() && ['torneos','jugadores','conceptos','usuarios'].includes(t)) t = 'dash';
+  tab = t;
+  document.querySelectorAll('#nav button').forEach(b => { if (b.dataset.tab===t) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  ({ dash:vDash, nuevo:vNuevo, juegos:vJuegos, torneos:vTorneos, jugadores:vJugadores, conceptos:vConceptos, usuarios:vUsuarios })[t]();
+}
+const main = () => $('#main');
+
+// ---------- Dashboard ----------
+let dashTorneo = '';
+function vDash(){
+  const opts = S.torneos.map(t => `<option value="${t.id}" ${String(t.id)===dashTorneo?'selected':''}>${esc(t.nombre)}</option>`).join('');
+  main().innerHTML = `
+    <div class="filters">
+      <label>Vista<select id="dashSel"><option value="">Global (todos los torneos)</option>${opts}</select></label>
+    </div>
+    <div id="dashBody"></div>`;
+  $('#dashSel').onchange = e => { dashTorneo = e.target.value; renderDash(); };
+  renderDash();
+}
+
+function renderDash(){
+  const tid = dashTorneo ? Number(dashTorneo) : null;
+  const juegos = tid ? S.juegos.filter(g => g.torneo_id === tid) : S.juegos;
+  const jids = new Set(juegos.map(g=>g.id));
+  const cargos = S.cargos.filter(c => jids.has(c.juego_id));
+  const r = resumen(cargos);
+  const deudores = new Set(cargos.filter(c=>!c.pagado).map(c=>c.jugador_id)).size;
+
+  let html = `<h2>${tid ? esc(tName(tid)) : 'Consolidado global'}</h2>
+    <dl class="kpis">
+      <div><dt>Juegos</dt><dd>${juegos.length}</dd></div>
+      <div><dt>Total ampayeo</dt><dd>${money(r.total)}</dd></div>
+      <div><dt>Cobrado</dt><dd class="ok">${money(r.pagado)}</dd></div>
+      <div><dt>Por cobrar</dt><dd class="warn">${money(r.pendiente)}</dd></div>
+      <div><dt>% cobrado</dt><dd>${pct(r.pagado,r.total)}%</dd></div>
+      <div><dt>Con adeudo</dt><dd>${deudores} jug.</dd></div>
+    </dl>`;
+
+  if (!tid) {
+    // Consolidado por torneo
+    const filas = S.torneos.map(t => {
+      const gs = S.juegos.filter(g=>g.torneo_id===t.id), ids = new Set(gs.map(g=>g.id));
+      return { t, n: gs.length, ...resumen(S.cargos.filter(c=>ids.has(c.juego_id))) };
+    }).filter(f => f.n > 0 || f.t.activo);
+    html += `<div class="card"><h3 style="margin-top:0">Consolidado por torneo / liga</h3><div class="scroll"><table>
+      <thead><tr><th>Torneo / liga</th><th>Tipo</th><th class="num">Ampayeo</th><th class="num">Juegos</th><th class="num">Total</th><th class="num">Cobrado</th><th class="num">Por cobrar</th><th>Avance</th></tr></thead><tbody>
+      ${filas.map(f => `<tr class="click" data-t="${f.t.id}"><td><b>${esc(f.t.nombre)}</b></td><td>${f.t.tipo}</td><td class="num">${money(f.t.costo_ampayeo)}</td><td class="num">${f.n}</td><td class="num">${money(f.total)}</td><td class="num">${money(f.pagado)}</td><td class="num">${money(f.pendiente)}</td><td><div class="bar"><i style="width:${pct(f.pagado,f.total)}%"></i></div></td></tr>`).join('') || '<tr><td colspan="8" class="muted">Sin torneos todavía.</td></tr>'}
+      </tbody><tfoot><tr><td colspan="3">Total</td><td class="num">${juegos.length}</td><td class="num">${money(r.total)}</td><td class="num">${money(r.pagado)}</td><td class="num">${money(r.pendiente)}</td><td></td></tr></tfoot></table></div></div>`;
+  }
+
+  // Por jugador
+  const porJ = new Map();
+  cargos.forEach(c => { const o = porJ.get(c.jugador_id) || { juegos:0, total:0, pagado:0 }; o.juegos++; o.total += Number(c.monto); if (c.pagado) o.pagado += Number(c.monto); porJ.set(c.jugador_id, o); });
+  const filasJ = [...porJ.entries()].map(([id,o]) => ({ id, ...o, pend: o.total-o.pagado })).sort((a,b)=> b.pend-a.pend || jName(a.id).localeCompare(jName(b.id)));
+  html += `<div class="card"><h3 style="margin-top:0">Estado de cuenta por pelotero</h3><p class="small muted" style="margin:0 0 8px">Toca un pelotero para ver sus juegos y marcar pagos.</p><div class="scroll"><table>
+    <thead><tr><th>Pelotero</th><th class="num">Juegos</th><th class="num">Cargado</th><th class="num">Pagado</th><th class="num">Debe</th><th>Estatus</th></tr></thead><tbody>
+    ${filasJ.map(f => `<tr class="click" data-j="${f.id}"><td>${esc(jName(f.id))}</td><td class="num">${f.juegos}</td><td class="num">${money(f.total)}</td><td class="num">${money(f.pagado)}</td><td class="num">${money(f.pend)}</td><td>${f.pend<=0.004?'<span class="pill ok">Al corriente</span>':f.pagado>0?'<span class="pill mid">Parcial</span>':'<span class="pill warn">Debe</span>'}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">Sin cargos registrados.</td></tr>'}
+    </tbody></table></div></div>`;
+
+  if (tid) html += `<div class="card"><h3 style="margin-top:0">Juegos del torneo</h3>${tablaJuegos(juegos)}</div>`;
+
+  $('#dashBody').innerHTML = html;
+  $('#dashBody').querySelectorAll('tr[data-t]').forEach(tr => tr.onclick = () => { dashTorneo = tr.dataset.t; vDash(); });
+  $('#dashBody').querySelectorAll('tr[data-j]').forEach(tr => tr.onclick = () => cuentaJugador(Number(tr.dataset.j), tid));
+  bindJuegos($('#dashBody'));
+}
+
+function cuentaJugador(jid, tid){
+  const render = () => {
+    const juegos = new Map(S.juegos.filter(g => !tid || g.torneo_id===tid).map(g=>[g.id,g]));
+    const cs = S.cargos.filter(c => c.jugador_id===jid && juegos.has(c.juego_id)).sort((a,b)=> (juegos.get(b.juego_id).fecha).localeCompare(juegos.get(a.juego_id).fecha));
+    const r = resumen(cs);
+    $('#dlgTitle').textContent = jName(jid);
+    $('#dlgBody').innerHTML = `<dl class="kpis"><div><dt>Cargado</dt><dd>${money(r.total)}</dd></div><div><dt>Pagado</dt><dd class="ok">${money(r.pagado)}</dd></div><div><dt>Debe</dt><dd class="warn">${money(r.pendiente)}</dd></div></dl>
+      <div class="scroll"><table><thead><tr><th>Fecha</th><th>Torneo</th><th>Rival</th><th class="num">Monto</th><th>Pagado</th></tr></thead><tbody>
+      ${cs.map(c => { const g = juegos.get(c.juego_id); return `<tr><td>${fdate(g.fecha)}</td><td>${esc(tName(g.torneo_id))}</td><td>vs ${esc(g.rival)}</td><td class="num">${money(c.monto)}</td><td><input type="checkbox" class="paybox" data-c="${c.id}" ${c.pagado?'checked':''}></td></tr>`; }).join('')}
+      </tbody></table></div>
+      ${r.pendiente>0 ? `<div class="actions"><button class="btn primary" id="payAll">Marcar todo como pagado</button></div>` : ''}`;
+    $('#dlgBody').querySelectorAll('.paybox').forEach(b => b.onchange = async () => { await setPagado([Number(b.dataset.c)], b.checked); render(); });
+    $('#payAll')?.addEventListener('click', async () => { await setPagado(cs.filter(c=>!c.pagado).map(c=>c.id), true); render(); });
+  };
+  render(); dlg.onclose = () => { if (tab==='dash') renderDash(); if (tab==='juegos') vJuegos(); }; dlg.showModal();
+}
+
+async function setPagado(ids, val){
+  if (!ids.length) return;
+  const fecha_pago = val ? new Date().toISOString() : null;
+  await q(sb.from('tc_cargos').update({ pagado: val, fecha_pago }).in('id', ids));
+  S.cargos.forEach(c => { if (ids.includes(c.id)) { c.pagado = val; c.fecha_pago = fecha_pago; } });
+  toast(val ? 'Pago registrado' : 'Pago desmarcado');
+}
+
+// ---------- Nuevo juego ----------
+function vNuevo(){
+  const activos = S.torneos.filter(t=>t.activo);
+  if (!activos.length) { main().innerHTML = `<div class="card"><h2>Nuevo juego</h2><p>Primero ${isAdmin()?'da de alta un torneo o liga en la pestaña <b>Torneos</b> y asígnale peloteros':'un administrador debe dar de alta torneos y peloteros'}.</p></div>`; return; }
+  const conc = S.conceptos.filter(c=>c.activo);
+  const defC = conc.find(c=>/ampay/i.test(c.nombre)) || conc[0];
+  main().innerHTML = `<form class="card" id="fJuego"><h2>Nuevo juego</h2>
+    <div class="grid">
+      <label>Fecha<input type="date" name="fecha" value="${today()}" required></label>
+      <label>Torneo / liga<select name="torneo" required>${activos.map(t=>`<option value="${t.id}">${esc(t.nombre)} (${t.tipo})</option>`).join('')}</select></label>
+      <label>Costo de ampayeo<input type="number" name="costo" min="0" step="0.01" required></label>
+      <label>Concepto de pago<select name="concepto">${conc.map(c=>`<option value="${c.id}" ${c===defC?'selected':''}>${esc(c.nombre)}</option>`).join('')}<option value="">— Sin concepto —</option></select></label>
+      <label>Equipo rival (vs)<input name="rival" required placeholder="Ej. Dorados"></label>
+    </div>
+    <h3>Peloteros que asistieron</h3>
+    <div class="actions" style="margin-top:0"><button type="button" class="btn sm" id="selAll">Todos</button><button type="button" class="btn sm" id="selNone">Ninguno</button></div>
+    <div class="roster" id="roster"></div>
+    <div class="split"><span>Asistentes: <b id="nAsis">0</b></span><span>Costo por pelotero: <b id="porJ">—</b></span><span>Total: <b id="tot">—</b></span></div>
+    <label style="margin-top:12px">Notas<textarea name="notas" rows="2"></textarea></label>
+    <div class="actions"><button class="btn primary" id="btnGuardar">Guardar juego</button></div>
+  </form>`;
+  const f = $('#fJuego');
+  const pintarRoster = () => {
+    const t = byId(S.torneos, Number(f.torneo.value));
+    f.costo.value = t.costo_ampayeo;
+    const js = rosterOf(t.id);
+    $('#roster').innerHTML = js.length ? js.map(j => `<label><input type="checkbox" value="${j.id}"> ${j.numero?`<span class="muted">#${esc(j.numero)}</span>`:''} ${esc(j.nombre)}<span class="amt"></span></label>`).join('')
+      : `<p class="muted">Este torneo no tiene peloteros asignados. ${isAdmin()?'Asígnalos en <b>Torneos › Peloteros</b>.':''}</p>`;
+    $('#roster').querySelectorAll('input').forEach(i => i.onchange = calc);
+    calc();
+  };
+  const calc = () => {
+    const sel = [...$('#roster').querySelectorAll('input')];
+    const on = sel.filter(i=>i.checked), montos = repartir(Number(f.costo.value)||0, on.length);
+    sel.forEach(i => { i.parentElement.classList.toggle('on', i.checked); i.parentElement.querySelector('.amt').textContent = ''; });
+    on.forEach((i,k) => i.parentElement.querySelector('.amt').textContent = money(montos[k]));
+    $('#nAsis').textContent = on.length;
+    $('#porJ').textContent = on.length ? money((Number(f.costo.value)||0)/on.length) : '—';
+    $('#tot').textContent = money(f.costo.value);
+  };
+  f.torneo.onchange = pintarRoster; f.costo.oninput = calc;
+  $('#selAll').onclick = () => { $('#roster').querySelectorAll('input').forEach(i=>i.checked=true); calc(); };
+  $('#selNone').onclick = () => { $('#roster').querySelectorAll('input').forEach(i=>i.checked=false); calc(); };
+  pintarRoster();
+  f.onsubmit = async e => {
+    e.preventDefault();
+    const ids = [...$('#roster').querySelectorAll('input:checked')].map(i=>Number(i.value));
+    if (!ids.length) return toast('Selecciona al menos un pelotero');
+    $('#btnGuardar').disabled = true;
+    try {
+      const costo = Number(f.costo.value)||0;
+      const [g] = await q(sb.from('tc_juegos').insert({ fecha:f.fecha.value, torneo_id:Number(f.torneo.value), concepto_id: f.concepto.value?Number(f.concepto.value):null, rival:f.rival.value.trim(), costo_total:costo, notas:f.notas.value.trim()||null }).select());
+      const montos = repartir(costo, ids.length);
+      const cs = await q(sb.from('tc_cargos').insert(ids.map((jid,k)=>({ juego_id:g.id, jugador_id:jid, monto:montos[k] }))).select());
+      S.juegos.unshift(g); S.cargos.push(...cs);
+      toast('Juego guardado');
+      tab = 'juegos'; go('juegos'); verJuego(g.id);
+    } catch { $('#btnGuardar').disabled = false; }
+  };
+}
+
+// ---------- Juegos ----------
+let fJT = '';
+function vJuegos(){
+  const juegos = fJT ? S.juegos.filter(g=>g.torneo_id===Number(fJT)) : S.juegos;
+  main().innerHTML = `<div class="card"><h2>Juegos</h2>
+    <div class="filters"><label>Torneo<select id="fjt"><option value="">Todos</option>${S.torneos.map(t=>`<option value="${t.id}" ${String(t.id)===fJT?'selected':''}>${esc(t.nombre)}</option>`).join('')}</select></label></div>
+    ${tablaJuegos(juegos)}</div>`;
+  $('#fjt').onchange = e => { fJT = e.target.value; vJuegos(); };
+  bindJuegos(main());
+}
+function tablaJuegos(juegos){
+  if (!juegos.length) return '<p class="muted">Sin juegos registrados.</p>';
+  return `<div class="scroll"><table><thead><tr><th>Fecha</th><th>Torneo</th><th>Rival</th><th>Concepto</th><th class="num">Asist.</th><th class="num">Total</th><th class="num">Cobrado</th><th class="num">Pendiente</th><th></th></tr></thead><tbody>
+    ${juegos.map(g => { const cs = S.cargos.filter(c=>c.juego_id===g.id), r = resumen(cs);
+      return `<tr class="click" data-g="${g.id}"><td>${fdate(g.fecha)}</td><td>${esc(tName(g.torneo_id))}</td><td>vs ${esc(g.rival)}</td><td>${esc(g.concepto_id?cName(g.concepto_id):'—')}</td><td class="num">${cs.length}</td><td class="num">${money(r.total)}</td><td class="num">${money(r.pagado)}</td><td class="num">${money(r.pendiente)}</td><td>${r.pendiente<=0.004?'<span class="pill ok">Liquidado</span>':'<span class="pill warn">Pendiente</span>'}</td></tr>`; }).join('')}
+    </tbody></table></div>`;
+}
+function bindJuegos(root){ root.querySelectorAll('tr[data-g]').forEach(tr => tr.onclick = () => verJuego(Number(tr.dataset.g))); }
+
+function verJuego(gid){
+  const render = () => {
+    const g = byId(S.juegos, gid); if (!g) return dlg.close();
+    const cs = S.cargos.filter(c=>c.juego_id===gid).sort((a,b)=>jName(a.jugador_id).localeCompare(jName(b.jugador_id)));
+    const r = resumen(cs);
+    $('#dlgTitle').textContent = `${fdate(g.fecha)} · vs ${g.rival}`;
+    $('#dlgBody').innerHTML = `<p class="small muted" style="margin-top:0">${esc(tName(g.torneo_id))} · ${esc(g.concepto_id?cName(g.concepto_id):'Sin concepto')}${g.notas?' · '+esc(g.notas):''}</p>
+      <dl class="kpis"><div><dt>Total</dt><dd>${money(r.total)}</dd></div><div><dt>Cobrado</dt><dd class="ok">${money(r.pagado)}</dd></div><div><dt>Por cobrar</dt><dd class="warn">${money(r.pendiente)}</dd></div><div><dt>Asistentes</dt><dd>${cs.length}</dd></div></dl>
+      <div class="scroll"><table><thead><tr><th>Pelotero</th><th class="num">Monto</th><th>Pagado</th></tr></thead><tbody>
+      ${cs.map(c=>`<tr><td>${esc(jName(c.jugador_id))}</td><td class="num">${money(c.monto)}</td><td><input type="checkbox" class="paybox" data-c="${c.id}" ${c.pagado?'checked':''}></td></tr>`).join('')}
+      </tbody><tfoot><tr><td>Total</td><td class="num">${money(r.total)}</td><td></td></tr></tfoot></table></div>
+      <div class="actions">${r.pendiente>0?'<button class="btn primary" id="payAllG">Marcar todos pagados</button>':''}${isAdmin()?'<button class="btn danger" id="delG" style="margin-left:auto">Eliminar juego</button>':''}</div>`;
+    $('#dlgBody').querySelectorAll('.paybox').forEach(b => b.onchange = async () => { await setPagado([Number(b.dataset.c)], b.checked); render(); });
+    $('#payAllG')?.addEventListener('click', async () => { await setPagado(cs.filter(c=>!c.pagado).map(c=>c.id), true); render(); });
+    $('#delG')?.addEventListener('click', async () => {
+      if (!confirm('¿Eliminar este juego y todos sus cargos? No se puede deshacer.')) return;
+      await q(sb.from('tc_juegos').delete().eq('id', gid));
+      S.juegos = S.juegos.filter(x=>x.id!==gid); S.cargos = S.cargos.filter(c=>c.juego_id!==gid);
+      dlg.close(); toast('Juego eliminado');
+    });
+  };
+  render(); dlg.onclose = () => { if (tab==='juegos') vJuegos(); if (tab==='dash') renderDash(); }; dlg.showModal();
+}
+
+// ---------- Catálogos (admin) ----------
+function catalogo({ titulo, tabla, campos, columnas, extra }){
+  let edit = null;
+  const render = () => {
+    const rows = S[tabla.replace('tc_','')];
+    main().innerHTML = `<form class="card" id="fCat"><h2>${edit?'Editar':'Alta de'} ${titulo}</h2><div class="grid">
+      ${campos.map(c => c.type==='select'
+        ? `<label>${c.label}<select name="${c.name}">${c.options.map(o=>`<option ${edit&&edit[c.name]===o?'selected':''}>${o}</option>`).join('')}</select></label>`
+        : c.type==='check' ? `<label>${c.label}<select name="${c.name}"><option value="true" ${!edit||edit[c.name]?'selected':''}>Sí</option><option value="false" ${edit&&!edit[c.name]?'selected':''}>No</option></select></label>`
+        : `<label>${c.label}<input name="${c.name}" type="${c.type||'text'}" ${c.type==='number'?'step="0.01" min="0"':''} ${c.req?'required':''} value="${esc(edit?edit[c.name]:(c.def??''))}"></label>`).join('')}
+      </div><div class="actions"><button class="btn primary">${edit?'Guardar cambios':'Agregar'}</button>${edit?'<button type="button" class="btn" id="cancel">Cancelar</button>':''}</div></form>
+      <div class="card"><h3 style="margin-top:0">${titulo} registrados (${rows.length})</h3><div class="scroll"><table><thead><tr>${columnas.map(c=>`<th class="${c.num?'num':''}">${c.label}</th>`).join('')}<th></th></tr></thead><tbody>
+      ${rows.map(r=>`<tr>${columnas.map(c=>`<td class="${c.num?'num':''}">${c.fmt?c.fmt(r):esc(r[c.key])}</td>`).join('')}<td style="white-space:nowrap">${extra?extra(r):''}<button class="btn sm" data-e="${r.id}">Editar</button> <button class="btn sm danger" data-d="${r.id}">Borrar</button></td></tr>`).join('') || `<tr><td colspan="${columnas.length+1}" class="muted">Sin registros.</td></tr>`}
+      </tbody></table></div></div>`;
+    const f = $('#fCat');
+    $('#cancel')?.addEventListener('click', () => { edit = null; render(); });
+    f.onsubmit = async e => {
+      e.preventDefault();
+      const row = {}; campos.forEach(c => { let v = f[c.name].value; if (c.type==='number') v = Number(v)||0; else if (c.type==='check') v = v==='true'; else v = v.trim() || null; row[c.name] = v; });
+      if (edit) { const [u] = await q(sb.from(tabla).update(row).eq('id', edit.id).select()); Object.assign(edit, u); toast('Actualizado'); }
+      else { const [n] = await q(sb.from(tabla).insert(row).select()); rows.push(n); rows.sort((a,b)=>a.nombre.localeCompare(b.nombre)); toast('Agregado'); }
+      edit = null; render();
+    };
+    main().querySelectorAll('[data-e]').forEach(b => b.onclick = () => { edit = byId(rows, Number(b.dataset.e)); render(); scrollTo({top:0,behavior:'smooth'}); });
+    main().querySelectorAll('[data-d]').forEach(b => b.onclick = async () => {
+      if (!confirm('¿Borrar este registro? No se puede deshacer.')) return;
+      const { error } = await sb.from(tabla).delete().eq('id', Number(b.dataset.d));
+      if (error) return toast(error.code==='23503' ? 'Tiene juegos registrados; mejor márcalo como inactivo.' : 'Error: '+error.message);
+      S[tabla.replace('tc_','')] = rows.filter(r=>r.id!==Number(b.dataset.d)); toast('Borrado'); render();
+    });
+    main().querySelectorAll('[data-r]').forEach(b => b.onclick = () => editarRoster(Number(b.dataset.r), render));
+  };
+  render();
+}
+const activoFmt = r => r.activo ? '<span class="pill ok">Activo</span>' : '<span class="pill warn">Inactivo</span>';
+
+function vTorneos(){ catalogo({ titulo:'torneos / ligas', tabla:'tc_torneos',
+  campos:[{name:'nombre',label:'Nombre',req:true},{name:'tipo',label:'Tipo',type:'select',options:['Torneo','Liga']},{name:'costo_ampayeo',label:'Costo de ampayeo por juego',type:'number',req:true},{name:'activo',label:'Activo',type:'check'}],
+  columnas:[{key:'nombre',label:'Nombre'},{key:'tipo',label:'Tipo'},{label:'Ampayeo',num:true,fmt:r=>money(r.costo_ampayeo)},{label:'Peloteros',num:true,fmt:r=>S.roster.filter(x=>x.torneo_id===r.id).length},{label:'Estatus',fmt:activoFmt}],
+  extra:r=>`<button class="btn sm" data-r="${r.id}">Peloteros</button> ` }); }
+
+function vJugadores(){ catalogo({ titulo:'jugadores', tabla:'tc_jugadores',
+  campos:[{name:'nombre',label:'Nombre',req:true},{name:'numero',label:'Número'},{name:'posicion',label:'Posición'},{name:'telefono',label:'Teléfono (papá/mamá)',type:'tel'},{name:'activo',label:'Activo',type:'check'}],
+  columnas:[{key:'nombre',label:'Nombre'},{key:'numero',label:'#'},{key:'posicion',label:'Posición'},{key:'telefono',label:'Teléfono'},{label:'Torneos',fmt:r=>esc(S.roster.filter(x=>x.jugador_id===r.id).map(x=>tName(x.torneo_id)).join(', '))},{label:'Estatus',fmt:activoFmt}] }); }
+
+function vConceptos(){ catalogo({ titulo:'conceptos de pago', tabla:'tc_conceptos',
+  campos:[{name:'nombre',label:'Concepto',req:true},{name:'descripcion',label:'Descripción'},{name:'activo',label:'Activo',type:'check'}],
+  columnas:[{key:'nombre',label:'Concepto'},{key:'descripcion',label:'Descripción'},{label:'Estatus',fmt:activoFmt}] }); }
+
+function editarRoster(tid, after){
+  const actuales = new Set(S.roster.filter(r=>r.torneo_id===tid).map(r=>r.jugador_id));
+  $('#dlgTitle').textContent = 'Peloteros · ' + tName(tid);
+  $('#dlgBody').innerHTML = S.jugadores.length ? `<p class="small muted" style="margin-top:0">Marca a los peloteros que juegan en este torneo / liga.</p>
+    <div class="actions" style="margin-top:0"><button class="btn sm" id="rAll">Todos</button><button class="btn sm" id="rNone">Ninguno</button></div>
+    <div class="roster">${S.jugadores.filter(j=>j.activo||actuales.has(j.id)).map(j=>`<label class="${actuales.has(j.id)?'on':''}"><input type="checkbox" value="${j.id}" ${actuales.has(j.id)?'checked':''}> ${esc(j.nombre)}</label>`).join('')}</div>
+    <div class="actions"><button class="btn primary" id="rSave">Guardar</button></div>` : '<p>Primero da de alta jugadores.</p>';
+  const boxes = () => [...$('#dlgBody').querySelectorAll('.roster input')];
+  boxes().forEach(i => i.onchange = () => i.parentElement.classList.toggle('on', i.checked));
+  $('#rAll')?.addEventListener('click', () => boxes().forEach(i=>{i.checked=true;i.parentElement.classList.add('on');}));
+  $('#rNone')?.addEventListener('click', () => boxes().forEach(i=>{i.checked=false;i.parentElement.classList.remove('on');}));
+  $('#rSave')?.addEventListener('click', async () => {
+    const nuevos = new Set(boxes().filter(i=>i.checked).map(i=>Number(i.value)));
+    const add = [...nuevos].filter(id=>!actuales.has(id)), del = [...actuales].filter(id=>!nuevos.has(id));
+    if (add.length) await q(sb.from('tc_torneo_jugadores').insert(add.map(jugador_id=>({ torneo_id:tid, jugador_id }))));
+    if (del.length) await q(sb.from('tc_torneo_jugadores').delete().eq('torneo_id',tid).in('jugador_id',del));
+    S.roster = S.roster.filter(r=>!(r.torneo_id===tid && del.includes(r.jugador_id))).concat(add.map(jugador_id=>({ torneo_id:tid, jugador_id })));
+    toast('Peloteros actualizados'); dlg.close();
+  });
+  dlg.onclose = () => after(); dlg.showModal();
+}
+
+// ---------- Usuarios (admin) ----------
+async function vUsuarios(){
+  const us = await q(sb.from('tc_perfiles').select('*').order('creado'));
+  main().innerHTML = `<div class="card"><h2>Usuarios</h2>
+    <p class="small muted">Las personas se registran con "Solicitar acceso" y quedan <b>pendientes</b>. Aquí las activas como <b>usuario</b> (registra juegos y pagos) o <b>admin</b> (además administra catálogos, usuarios y puede borrar).</p>
+    <div class="scroll"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Alta</th><th></th></tr></thead><tbody>
+    ${us.map(u=>`<tr><td>${esc(u.nombre||'—')}</td><td>${esc(u.email)}</td><td>${u.id===me.id?`<b>${u.rol}</b> (tú)`:`<select data-u="${u.id}">${['pendiente','usuario','admin'].map(r=>`<option ${u.rol===r?'selected':''}>${r}</option>`).join('')}</select>`}</td><td>${new Date(u.creado).toLocaleDateString('es-MX')}</td><td>${u.id===me.id?'':`<button class="btn sm danger" data-x="${u.id}">Quitar</button>`}</td></tr>`).join('')}
+    </tbody></table></div></div>`;
+  main().querySelectorAll('select[data-u]').forEach(s => s.onchange = async () => { await q(sb.from('tc_perfiles').update({ rol:s.value }).eq('id', s.dataset.u)); toast('Rol actualizado'); });
+  main().querySelectorAll('[data-x]').forEach(b => b.onclick = async () => { if (!confirm('¿Quitar acceso a este usuario?')) return; await q(sb.from('tc_perfiles').delete().eq('id', b.dataset.x)); vUsuarios(); });
+}
+
+const dlg = $('#dlg');
+boot();
+</script>
+</body>
+</html>

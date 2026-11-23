@@ -181,16 +181,29 @@ end $$;
 grant execute on function public.tc_registrar(text) to authenticated;
 grant execute on function public.tc_rol(), public.tc_es_admin(), public.tc_es_miembro() to authenticated;
 
+-- Usuarios (no solo admin) pueden dar de alta peloteros y agregarlos a un torneo desde el juego
+drop policy if exists tc_jugadores_ins_m on public.tc_jugadores;
+create policy tc_jugadores_ins_m on public.tc_jugadores for insert to authenticated with check (public.tc_es_miembro());
+drop policy if exists tc_torneo_jugadores_ins_m on public.tc_torneo_jugadores;
+create policy tc_torneo_jugadores_ins_m on public.tc_torneo_jugadores for insert to authenticated with check (public.tc_es_miembro());
+
+-- Todo en mayúsculas
+update public.tc_torneos set nombre = upper(nombre) where nombre <> upper(nombre);
+update public.tc_jugadores set nombre = upper(nombre), posicion = upper(posicion) where nombre <> upper(nombre) or posicion <> upper(posicion);
+update public.tc_conceptos set nombre = upper(nombre), descripcion = upper(descripcion) where nombre <> upper(nombre) or descripcion <> upper(descripcion);
+update public.tc_campos set nombre = upper(nombre) where nombre <> upper(nombre);
+update public.tc_juegos set rival = upper(rival), notas = upper(notas) where rival <> upper(rival) or notas <> upper(notas);
+
 -- Campos y tarifas iniciales (editables en la app, pestaña Tarifas)
-insert into public.tc_campos (nombre) values ('La Villa'), ('Almanza'), ('Deportiva Sur')
+insert into public.tc_campos (nombre) values ('LA VILLA'), ('ALMANZA'), ('DEPORTIVA SUR')
 on conflict (nombre) do nothing;
 insert into public.tc_tarifas (torneo_id, campo_id, num_ampayers, costo)
 select null, c.id, v.n, v.costo
-from (values ('La Villa',1,750), ('La Villa',2,1200), ('Almanza',1,550), ('Deportiva Sur',1,450)) as v(campo,n,costo)
+from (values ('LA VILLA',1,750), ('LA VILLA',2,1200), ('ALMANZA',1,550), ('DEPORTIVA SUR',1,450)) as v(campo,n,costo)
 join public.tc_campos c on c.nombre = v.campo
 on conflict do nothing;
 
 -- Concepto de pago inicial (opcional)
 insert into public.tc_conceptos (nombre, descripcion)
-select 'Ampayeo', 'Pago de umpires por juego'
-where not exists (select 1 from public.tc_conceptos where nombre = 'Ampayeo');
+select 'AMPAYEO', 'PAGO DE UMPIRES POR JUEGO'
+where not exists (select 1 from public.tc_conceptos where upper(nombre) = 'AMPAYEO');

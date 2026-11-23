@@ -90,6 +90,9 @@ tfoot td{font-weight:700;border-top:2px solid var(--line);border-bottom:0}
 .pw button{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:0;padding:6px;cursor:pointer;color:var(--muted);display:flex;border-radius:6px}
 .pw button:hover{color:var(--purple)}
 .pw svg{width:22px;height:22px}
+main input:not([type]),main input[type=text],main textarea,dialog input:not([type]),dialog input[type=text],dialog textarea{text-transform:uppercase}
+.addp{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.addp input{flex:1;min-width:200px}
 .linkish{background:none;border:0;color:var(--purple);text-decoration:underline;cursor:pointer;font:inherit;padding:0}
 dialog{border:0;border-radius:12px;padding:0;max-width:min(720px,94vw);width:100%;box-shadow:0 20px 60px rgba(30,15,70,.35)}
 dialog::backdrop{background:rgba(26,21,48,.45)}
@@ -393,17 +396,18 @@ function vNuevo(){
     <h3>Peloteros que asistieron</h3>
     <div class="actions" style="margin-top:0"><button type="button" class="btn sm" id="selAll">Todos</button><button type="button" class="btn sm" id="selNone">Ninguno</button></div>
     <div class="roster" id="roster"></div>
+    ${addPlayerHTML('n')}
     <div class="split"><span>Asistentes: <b id="nAsis">0</b></span><span>Costo por pelotero: <b id="porJ">—</b></span><span>Total: <b id="tot">—</b></span></div>
     <label style="margin-top:12px">Notas<textarea name="notas" rows="2"></textarea></label>
     <div class="actions"><button class="btn primary" id="btnGuardar">Guardar juego</button></div>
   </form>`;
   const f = $('#fJuego');
-  const pintarRoster = () => {
+  const pintarRoster = (keep) => {
     const t = byId(S.torneos, Number(f.torneo.value));
-    sugerir();
-    const js = rosterOf(t.id);
-    $('#roster').innerHTML = js.length ? js.map(j => `<label><input type="checkbox" value="${j.id}"> ${j.numero?`<span class="muted">#${esc(j.numero)}</span>`:''} ${esc(j.nombre)}<span class="amt"></span></label>`).join('')
-      : `<p class="muted">Este torneo no tiene peloteros asignados. ${isAdmin()?'Asígnalos en <b>Torneos › Peloteros</b>.':''}</p>`;
+    if (!keep) sugerir();
+    const js = rosterOf(t.id), on = keep || new Set();
+    $('#roster').innerHTML = js.length ? js.map(j => `<label><input type="checkbox" value="${j.id}" ${on.has(j.id)?'checked':''}> ${j.numero?`<span class="muted">#${esc(j.numero)}</span>`:''} ${esc(j.nombre)}<span class="amt"></span></label>`).join('')
+      : `<p class="muted">Este torneo no tiene peloteros asignados. Agrégalos abajo${isAdmin()?' o en <b>Torneos › Peloteros</b>':''}.</p>`;
     $('#roster').querySelectorAll('input').forEach(i => i.onchange = calc);
     calc();
   };
@@ -421,7 +425,8 @@ function vNuevo(){
     f.costo.value = r.costo; $('#costoHint').textContent = r.txt; $('#costoHint').className = 'hint'+(r.base?' base':'');
     if ($('#roster').children.length) calc();
   }
-  f.torneo.onchange = pintarRoster; f.campo.onchange = sugerir; f.namp.onchange = sugerir;
+  bindAddPlayer('n', () => Number(f.torneo.value), id => { const keep = new Set([...$('#roster').querySelectorAll('input:checked')].map(i=>Number(i.value))); keep.add(id); pintarRoster(keep); });
+  f.torneo.onchange = () => pintarRoster(); f.campo.onchange = sugerir; f.namp.onchange = sugerir;
   f.costo.oninput = () => { $('#costoHint').textContent = 'Costo capturado a mano'; $('#costoHint').className = 'hint base'; calc(); };
   $('#selAll').onclick = () => { $('#roster').querySelectorAll('input').forEach(i=>i.checked=true); calc(); };
   $('#selNone').onclick = () => { $('#roster').querySelectorAll('input').forEach(i=>i.checked=false); calc(); };
@@ -440,6 +445,31 @@ function vNuevo(){
       toast('Juego guardado');
       tab = 'juegos'; go('juegos'); verJuego(g.id);
     } catch { $('#btnGuardar').disabled = false; }
+  };
+}
+
+// ---------- Agregar pelotero desde el juego ----------
+function addPlayerHTML(k){
+  return `<div class="addp"><input id="${k}AddName" list="${k}DlJug" placeholder="Agregar pelotero (nombre)" autocomplete="off"><datalist id="${k}DlJug"></datalist><button type="button" class="btn sm" id="${k}AddBtn">+ Agregar al torneo</button></div>`;
+}
+function bindAddPlayer(k, getTid, onAdded){
+  const inp = $('#'+k+'AddName'), btn = $('#'+k+'AddBtn');
+  const llenar = () => { const tid = getTid(), dentro = new Set(S.roster.filter(r=>r.torneo_id===tid).map(r=>r.jugador_id));
+    $('#'+k+'DlJug').innerHTML = S.jugadores.filter(j=>!dentro.has(j.id)).map(j=>`<option value="${esc(j.nombre)}">`).join(''); };
+  inp.onfocus = llenar;
+  inp.onkeydown = e => { if (e.key==='Enter') { e.preventDefault(); btn.click(); } };
+  btn.onclick = async () => {
+    const nombre = inp.value.trim().toUpperCase().replace(/\s+/g,' ');
+    if (!nombre) return inp.focus();
+    btn.disabled = true;
+    try {
+      const tid = getTid();
+      let j = S.jugadores.find(x => x.nombre.toUpperCase() === nombre);
+      if (!j) { [j] = await q(sb.from('tc_jugadores').insert({ nombre }).select()); S.jugadores.push(j); S.jugadores.sort((a,b)=>a.nombre.localeCompare(b.nombre)); }
+      else if (!j.activo && isAdmin()) { await q(sb.from('tc_jugadores').update({ activo:true }).eq('id', j.id)); j.activo = true; }
+      if (!S.roster.some(r=>r.torneo_id===tid && r.jugador_id===j.id)) { await q(sb.from('tc_torneo_jugadores').insert({ torneo_id:tid, jugador_id:j.id })); S.roster.push({ torneo_id:tid, jugador_id:j.id }); }
+      inp.value = ''; toast(`${j.nombre} agregado a ${tName(tid)}`); onAdded(j.id);
+    } catch {} finally { btn.disabled = false; }
   };
 }
 
@@ -511,6 +541,7 @@ function verJuego(gid, modo){
       <h3>Asistentes</h3>
       ${isAdmin()?'':'<p class="small muted" style="margin:0 0 6px">Puedes agregar asistentes; para quitar a alguien pide a un admin.</p>'}
       <div class="roster" id="eRoster"></div>
+      ${addPlayerHTML('e')}
       <div class="split"><span>Asistentes: <b id="eN">0</b></span><span>Por pelotero: <b id="eP">—</b></span><span class="small muted">Se reparte de nuevo; los pagos marcados se conservan.</span></div>
       <div class="actions"><button class="btn primary" id="eSave">Guardar cambios</button><button type="button" class="btn" id="eCancel">Cancelar</button></div>
     </form>`;
@@ -530,6 +561,7 @@ function verJuego(gid, modo){
     f.torneo.onchange = () => { pintar(); }; f.campo.onchange = sug; f.namp.onchange = sug;
     f.costo.oninput = () => { $('#eHint').textContent = 'Costo capturado a mano'; $('#eHint').className = 'hint base'; calc(); };
     $('#eCancel').onclick = () => { editando = false; render(); };
+    bindAddPlayer('e', () => Number(f.torneo.value), id => { pintar(); const i = $('#eRoster').querySelector(`input[value="${id}"]`); if (i) { i.checked = true; i.parentElement.classList.add('on'); } calc(); });
     pintar();
     f.onsubmit = async e => {
       e.preventDefault();
@@ -661,6 +693,14 @@ async function vUsuarios(){
 }
 
 const dlg = $('#dlg');
+
+// ---------- Todo en MAYÚSCULAS (excepto correo y contraseña) ----------
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (!el.matches('input:not([type]),input[type=text],textarea') || el.closest('#vAuth,#vSetup')) return;
+  const up = el.value.toUpperCase(); if (up === el.value) return;
+  const a = el.selectionStart, b = el.selectionEnd; el.value = up; try { el.setSelectionRange(a, b); } catch {}
+});
 
 // ---------- Ojito para mostrar / ocultar contraseña ----------
 const OJO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';

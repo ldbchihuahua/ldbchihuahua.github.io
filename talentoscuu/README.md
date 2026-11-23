@@ -7,7 +7,7 @@ URL: https://ldbchihuahua.github.io/talentoscuu/
 ## Puesta en marcha (una sola vez)
 
 1. **Base de datos**: en Supabase (`muackgffpnpdojzhduuk`) abre *SQL Editor › New query*, pega `schema.sql` y ejecútalo. Crea las tablas `tc_*` con seguridad por roles (RLS).
-2. **Llave pública**: copia la *anon public key* (*Project Settings › API*) en `SUPABASE_ANON_KEY` dentro de `index.html`. Si no se pone, la app la pide al abrirse y la guarda en ese navegador.
+2. **Llave pública**: ya configurada en `index.html` (`SUPABASE_ANON_KEY`, publishable key).
 3. **Correo de confirmación** (opcional): en *Authentication › Sign In / Providers › Email* puedes desactivar "Confirm email" para que las cuentas entren sin confirmar por correo.
 4. **Primer acceso**: el primer usuario que se registre con "Solicitar acceso" queda como **admin**. Los siguientes quedan **pendientes** hasta que el admin los activa en la pestaña *Usuarios*.
 

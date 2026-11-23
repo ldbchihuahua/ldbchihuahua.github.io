@@ -99,6 +99,54 @@ dialog::backdrop{background:rgba(26,21,48,.45)}
 dialog .hd{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
 dialog .hd h2{margin:0;font-size:1.25rem}
 dialog .hd button{margin-left:auto}
+#dlg[open]{display:flex;flex-direction:column;max-height:88vh}
+#dlg .hd{padding-top:max(14px,env(safe-area-inset-top));background:var(--bg);flex:none}
+#dlg .ttl{flex:1;min-width:0}
+#dlg .ttl h2{overflow-wrap:anywhere;line-height:1.15}
+#dlgSub{font-size:.85rem;color:var(--muted);margin-top:2px}
+#dlgSub:empty,#dlgActs:empty{display:none}
+#dlgActs{display:flex;gap:6px;flex:none}
+#dlgActs .btn{margin:0}
+#dlg .hd .x{margin-left:0;flex:none;width:40px;height:40px;border-radius:50%;border:0;background:var(--soft);color:var(--ink);display:grid;place-items:center;cursor:pointer}
+#dlg .hd .x svg{width:20px;height:20px}
+#dlg .bd{flex:1;min-height:0;max-height:none;overflow:auto;-webkit-overflow-scrolling:touch}
+#dlg .ft{flex:none;display:flex;gap:8px;align-items:center;padding:10px 18px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--bg);box-shadow:0 -6px 16px rgba(30,15,70,.06)}
+#dlg .ft:empty{display:none}
+#dlg .ft .grow{flex:1}
+/* Cobro */
+.cobro{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.cobro .big{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.cobro .big span{font-family:var(--label);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-size:.85rem}
+.cobro .big b{font-size:1.9rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.cobro .big b.warn{color:var(--warn)} .cobro .big b.ok{color:var(--ok)}
+.cobro .bar{height:10px;border-radius:6px;margin:10px 0 8px}
+.cobro .meta{font-size:.9rem;color:var(--muted)}
+.cobro .meta b{color:var(--ink);font-variant-numeric:tabular-nums}
+.paylist{display:grid;gap:8px}
+.pay{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);cursor:pointer;transition:background .15s,border-color .15s,opacity .2s,transform .2s}
+.pay:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.pay .who{flex:1;min-width:0;display:flex;flex-direction:column}
+.pay .who b{font-weight:600;font-size:1rem;overflow-wrap:anywhere;line-height:1.25}
+.pay .who small{font-size:.82rem;color:var(--muted)}
+.pay .amt{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.pay .sw{flex:none;min-width:96px;text-align:center;font-family:var(--label);font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:.9rem;border-radius:999px;padding:7px 12px;border:1.5px solid var(--purple);color:var(--purple)}
+.pay.on{background:var(--ok-bg);border-color:#bfe3cd}
+.pay.on .amt{color:var(--ok)}
+.pay.on .sw{background:var(--ok);border-color:var(--ok);color:#fff}
+.pay.leaving{opacity:0;transform:translateX(24px)}
+@media (hover:hover){.pay:hover{border-color:var(--purple)}}
+.linkrow{display:flex;gap:18px;justify-content:center;margin:18px 0 4px}
+.linkrow .linkish.danger{color:var(--warn)}
+.toast{display:flex;align-items:center;justify-content:space-between;gap:14px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:max-content;max-width:min(92vw,440px)}
+#dlg .toast{bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:12px}
+.seg button{all:unset;box-sizing:border-box;text-align:center;padding:9px 4px;border-radius:9px;cursor:pointer;font-family:var(--label);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:.88rem;color:var(--muted);white-space:nowrap}
+.seg button b{font-family:var(--body);font-size:.85rem;margin-left:4px;background:var(--line);color:var(--ink);border-radius:999px;padding:0 7px}
+.seg button[aria-pressed="true"]{background:var(--bg);color:var(--purple-deep);box-shadow:0 1px 4px rgba(30,15,70,.12)}
+.seg button[aria-pressed="true"] b{background:var(--purple);color:#fff}
+#dlg .ft .btn{white-space:nowrap}
+.toast button{all:unset;cursor:pointer;color:var(--gold);font-family:var(--label);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+@media (min-width:701px){.toast{bottom:24px}}
 dialog .bd{padding:16px 18px;max-height:70vh;overflow:auto}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:8px;font-size:.95rem;z-index:50}
 .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:14px}
@@ -210,7 +258,8 @@ details.more summary{cursor:pointer;color:var(--purple);font-family:var(--label)
   .g-campo label:last-child{grid-column:1/-1}
   .card{padding:14px}
   #dlg{max-width:100vw;width:100vw;height:100dvh;max-height:100dvh;margin:0;border-radius:0}
-  #dlg .bd{max-height:calc(100dvh - 62px)}
+  #dlg[open]{max-height:100dvh}
+  #dlg .bd{max-height:none}
   .kpis.kpis.kpis.kpis:has(>div){grid-template-columns:repeat(2,minmax(0,1fr))}
   table.resp td{flex-wrap:wrap}
   table.resp td[style]{white-space:normal}
@@ -334,7 +383,7 @@ details.more summary{cursor:pointer;color:var(--purple);font-family:var(--label)
 </div>
 
 <dialog id="cdlg" style="width:min(420px,92vw);max-width:92vw;height:fit-content;max-height:90vh;margin:auto;border-radius:12px"><div class="bd" style="padding:20px"><p id="cMsg" style="margin:0 0 16px;white-space:pre-line"></p><div class="actions" style="justify-content:flex-end"><button class="btn" id="cNo">Cancelar</button><button class="btn primary" id="cSi">Sí, continuar</button></div></div></dialog>
-<dialog id="dlg"><div class="hd"><h2 id="dlgTitle"></h2><button class="btn sm" onclick="dlg.close()">Cerrar</button></div><div class="bd" id="dlgBody"></div></dialog>
+<dialog id="dlg"><div class="hd"><div class="ttl"><h2 id="dlgTitle"></h2><div id="dlgSub"></div></div><span id="dlgActs"></span><button class="x" onclick="dlg.close()" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="bd" id="dlgBody"></div><div class="ft" id="dlgFoot"></div></dialog>
 
 <script>
 // ====== Configuración ======
@@ -348,7 +397,13 @@ const money = n => (Number(n)||0).toLocaleString('es-MX',{style:'currency',curre
 const today = () => { const d = new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
 const fdate = s => s ? new Date(s+'T12:00:00').toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'}) : '';
 const pct = (a,b) => b>0 ? Math.round(a*100/b) : 0;
-function toast(t){ const d=document.createElement('div'); d.className='toast'; d.textContent=t; document.body.append(d); setTimeout(()=>d.remove(),2200); }
+function toast(t, accion, fn){
+  document.querySelectorAll('.toast').forEach(x=>x.remove());
+  const d=document.createElement('div'); d.className='toast'; d.setAttribute('role','status');
+  const sp=document.createElement('span'); sp.textContent=t; d.append(sp);
+  if (accion) { const b=document.createElement('button'); b.textContent=accion; b.onclick=()=>{ d.remove(); fn(); }; d.append(b); }
+  (dlg.open ? dlg : document.body).append(d); setTimeout(()=>d.remove(), accion ? 5000 : 2200);
+}
 function show(id){ ['vSetup','vAuth','vReset','vPend','vApp'].forEach(v=>$('#'+v).hidden = v!==id); }
 
 let sb, me = null, rol = null, tab = 'dash';
@@ -599,29 +654,66 @@ function renderDash(){
 }
 
 function cuentaJugador(jid, tid){
-  const render = () => {
+  let filtro = null;
+  const render = f => {
+    if (f) filtro = f;
     const juegos = new Map(S.juegos.filter(g => !tid || g.torneo_id===tid).map(g=>[g.id,g]));
     const cs = S.cargos.filter(c => c.jugador_id===jid && juegos.has(c.juego_id)).sort((a,b)=> (juegos.get(b.juego_id).fecha).localeCompare(juegos.get(a.juego_id).fecha));
-    const r = resumen(cs);
+    const r = resumen(cs), npend = cs.filter(c=>!c.pagado).length;
+    if (!filtro) filtro = npend ? 'pend' : 'todos';
     $('#dlgTitle').textContent = jName(jid);
-    $('#dlgBody').innerHTML = `<dl class="kpis"><div><dt>Cargado</dt><dd>${money(r.total)}</dd></div><div><dt>Pagado</dt><dd class="ok">${money(r.pagado)}</dd></div><div><dt>Debe</dt><dd class="warn">${money(r.pendiente)}</dd></div></dl>
-      <div class="scroll"><table><thead><tr><th>Fecha</th><th>Torneo</th><th>Rival</th><th class="num">Monto</th><th>Pagado</th></tr></thead><tbody>
-      ${cs.map(c => { const g = juegos.get(c.juego_id); return `<tr><td>${fdate(g.fecha)}</td><td>${esc(tName(g.torneo_id))}</td><td>vs ${esc(g.rival)}</td><td class="num">${money(c.monto)}</td><td><input type="checkbox" class="paybox" data-c="${c.id}" ${c.pagado?'checked':''}></td></tr>`; }).join('')}
-      </tbody></table></div>
-      <div class="actions">${r.pendiente>0 ? '<button class="btn primary" id="payAll">Marcar todo como pagado</button>' : '<span class="pill ok">Al corriente</span>'}${r.pendiente>0?'<button class="btn wa" id="waJ">Enviar recordatorio</button>':''}</div>`;
+    $('#dlgSub').textContent = `${cs.length} juego${cs.length!==1?'s':''}${tid?' · '+tName(tid):''}`;
+    $('#dlgActs').innerHTML = '';
+    $('#dlgBody').innerHTML = cobroHTML({ titulo: r.pendiente>0.004 ? 'Debe' : 'Al corriente', monto:r.pendiente, ok:r.pendiente<=0.004, pagado:r.pagado, total:r.total,
+        extra:`Pagó <b>${money(r.pagado)}</b> de <b>${money(r.total)}</b>` })
+      + listaPagos(cs, filtro, c => { const g = juegos.get(c.juego_id); return [`${fdate(g.fecha).toUpperCase()} · vs ${g.rival}`, tid ? '' : tName(g.torneo_id)]; });
+    $('#dlgFoot').innerHTML = npend ? `<button class="btn primary grow" id="payAll">Cobrar todo</button><button class="btn wa" id="waJ">Recordatorio</button>` : '';
+    bindPagos($('#dlgBody'), c => { const g = juegos.get(c.juego_id); return `vs ${g.rival}`; }, render);
     $('#waJ')?.addEventListener('click', () => compartir([`⚾ *TALENTOS CUU · Ampayeo*`, `Hola, te compartimos el adeudo de *${jName(jid)}*:`, '', ...cs.filter(c=>!c.pagado).map(c=>{ const g = juegos.get(c.juego_id); return `• ${fdate(g.fecha).toUpperCase()} vs ${g.rival}: ${money(c.monto)}`; }), '', `*Total: ${money(r.pendiente)}*`, '¡Gracias!'].join('\n')));
-    $('#dlgBody').querySelectorAll('.paybox').forEach(b => b.onchange = async () => { await setPagado([Number(b.dataset.c)], b.checked); render(); });
-    $('#payAll')?.addEventListener('click', async () => { await setPagado(cs.filter(c=>!c.pagado).map(c=>c.id), true); render(); });
+    $('#payAll')?.addEventListener('click', async () => {
+      const ids = cs.filter(c=>!c.pagado).map(c=>c.id);
+      if (!await confirmar(`¿Marcar como pagados los ${ids.length} juegos pendientes de ${jName(jid)} (${money(r.pendiente)})?`, 'Sí, cobrar')) return;
+      await setPagado(ids, true, true); render('todos');
+      toast(`${jName(jid)} quedó al corriente`, 'Deshacer', async () => { await setPagado(ids, false, true); render('pend'); });
+    });
   };
   render(); dlg.onclose = () => { if (tab==='dash') renderDash(); if (tab==='juegos') vJuegos(); }; dlg.showModal();
 }
 
-async function setPagado(ids, val){
+// Lista de cobro: toda la fila es el botón; filtro Pendientes/Pagados/Todos y deshacer
+function cobroHTML({ titulo, monto, ok, pagado, total, extra }){
+  return `<div class="cobro"><div class="big"><span>${titulo}</span><b class="${ok?'ok':'warn'}">${money(monto)}</b></div>
+    <div class="bar"><i style="width:${pct(pagado,total)}%"></i></div><div class="meta">${extra}</div></div>`;
+}
+function listaPagos(cs, filtro, fila){
+  const pend = cs.filter(c=>!c.pagado), pag = cs.filter(c=>c.pagado);
+  const vis = filtro==='pend' ? pend : filtro==='pag' ? pag : cs;
+  return `<div class="seg" role="group" aria-label="Filtrar">
+      <button type="button" data-f="pend" aria-pressed="${filtro==='pend'}">Deben<b>${pend.length}</b></button>
+      <button type="button" data-f="pag" aria-pressed="${filtro==='pag'}">Pagaron<b>${pag.length}</b></button>
+      <button type="button" data-f="todos" aria-pressed="${filtro==='todos'}">Todos<b>${cs.length}</b></button></div>
+    <div class="paylist">${vis.map(c => { const [nom, sub] = fila(c);
+      return `<button type="button" class="pay ${c.pagado?'on':''}" data-c="${c.id}" aria-pressed="${c.pagado}"><span class="who"><b>${esc(nom)}</b>${sub?`<small>${esc(sub)}</small>`:''}</span><span class="amt">${money(c.monto)}</span><span class="sw">${c.pagado?'✓ Pagado':'Cobrar'}</span></button>`; }).join('')
+      || `<p class="muted" style="text-align:center;padding:16px 0">${filtro==='pend' ? '✅ Nadie tiene pendiente.' : 'Nadie ha pagado todavía.'}</p>`}</div>`;
+}
+function bindPagos(root, nombreDe, rerender){
+  root.querySelectorAll('[data-f]').forEach(b => b.onclick = () => rerender(b.dataset.f));
+  root.querySelectorAll('.pay').forEach(b => b.onclick = async () => {
+    const id = Number(b.dataset.c), c = S.cargos.find(x=>x.id===id); if (!c) return;
+    const val = !c.pagado; b.disabled = true;
+    try { await setPagado([id], val, true); } catch { b.disabled = false; return; }
+    navigator.vibrate?.(15);
+    b.classList.add('leaving'); setTimeout(() => rerender(), 180);
+    toast(`${nombreDe(c)} ${val ? 'pagó' : 'quedó pendiente'} · ${money(c.monto)}`, 'Deshacer', async () => { await setPagado([id], !val, true); rerender(); });
+  });
+}
+
+async function setPagado(ids, val, silencioso){
   if (!ids.length) return;
   const fecha_pago = val ? new Date().toISOString() : null;
   await q(sb.from('tc_cargos').update({ pagado: val, fecha_pago }).in('id', ids));
   S.cargos.forEach(c => { if (ids.includes(c.id)) { c.pagado = val; c.fecha_pago = fecha_pago; } });
-  toast(val ? 'Pago registrado' : 'Pago desmarcado');
+  if (!silencioso) toast(val ? 'Pago registrado' : 'Pago desmarcado');
 }
 
 // ---------- Nuevo juego ----------
@@ -775,21 +867,32 @@ async function borrarJuego(gid){
 
 function verJuego(gid, modo){
   let editando = modo === 'editar';
-  const render = () => {
+  let filtro = null;
+  const render = f => {
+    if (f) filtro = f;
     const g = byId(S.juegos, gid); if (!g) return dlg.close();
     const cs = S.cargos.filter(c=>c.juego_id===gid).sort((a,b)=>jName(a.jugador_id).localeCompare(jName(b.jugador_id)));
-    const r = resumen(cs);
-    $('#dlgTitle').textContent = editando ? 'Editar juego' : `${fdate(g.fecha)} · vs ${g.rival}`;
-    if (editando) return renderEditar(g, cs);
-    $('#dlgBody').innerHTML = `<p class="small muted" style="margin-top:0">${esc(tName(g.torneo_id))}${g.campo_id?' · '+esc(campoName(g.campo_id))+' · '+(g.num_ampayers||1)+' ampayer'+((g.num_ampayers||1)>1?'s':''):''} · ${esc(g.concepto_id?cName(g.concepto_id):'Sin concepto')}${g.notas?' · '+esc(g.notas):''}</p>
-      <dl class="kpis"><div><dt>Total</dt><dd>${money(r.total)}</dd></div><div><dt>Cobrado</dt><dd class="ok">${money(r.pagado)}</dd></div><div><dt>Por cobrar</dt><dd class="warn">${money(r.pendiente)}</dd></div><div><dt>Asistentes</dt><dd>${cs.length}</dd></div></dl>
-      <div class="scroll"><table><thead><tr><th>Pelotero</th><th class="num">Monto</th><th>Pagado</th></tr></thead><tbody>
-      ${cs.map(c=>`<tr><td>${esc(jName(c.jugador_id))}</td><td class="num">${money(c.monto)}</td><td><input type="checkbox" class="paybox" data-c="${c.id}" ${c.pagado?'checked':''}></td></tr>`).join('')}
-      </tbody><tfoot><tr><td>Total</td><td class="num">${money(r.total)}</td><td></td></tr></tfoot></table></div>
-      <div class="actions">${r.pendiente>0?'<button class="btn primary" id="payAllG">Marcar todos pagados</button>':''}<button class="btn wa" id="waG">WhatsApp</button><button class="btn" id="editG">Editar</button>${isAdmin()?'<button class="btn danger" id="delG" style="margin-left:auto">Eliminar juego</button>':''}</div>`;
-    $('#dlgBody').querySelectorAll('.paybox').forEach(b => b.onchange = async () => { await setPagado([Number(b.dataset.c)], b.checked); render(); });
-    $('#payAllG')?.addEventListener('click', async () => { await setPagado(cs.filter(c=>!c.pagado).map(c=>c.id), true); render(); });
-    $('#editG').onclick = () => { editando = true; render(); };
+    const r = resumen(cs), npag = cs.filter(c=>c.pagado).length, npend = cs.length - npag;
+    if (!filtro) filtro = npend ? 'pend' : 'todos';
+    $('#dlgTitle').textContent = editando ? 'Editar juego' : `vs ${g.rival}`;
+    $('#dlgSub').textContent = editando ? `${fdate(g.fecha)} · vs ${g.rival}` : [fdate(g.fecha).toUpperCase(), tName(g.torneo_id), g.campo_id ? `${campoName(g.campo_id)} · ${g.num_ampayers||1} ampayer${(g.num_ampayers||1)>1?'s':''}` : '', g.concepto_id ? cName(g.concepto_id) : ''].filter(Boolean).join(' · ');
+    if (editando) { $('#dlgActs').innerHTML = ''; $('#dlgFoot').innerHTML = ''; return renderEditar(g, cs); }
+    $('#dlgActs').innerHTML = '<button class="btn sm" id="editG">Editar</button>';
+    $('#dlgBody').innerHTML = cobroHTML({ titulo: r.pendiente>0.004 ? 'Por cobrar' : 'Liquidado', monto: r.pendiente>0.004 ? r.pendiente : r.total, ok:r.pendiente<=0.004, pagado:r.pagado, total:r.total,
+        extra:`Cobrado <b>${money(r.pagado)}</b> de <b>${money(r.total)}</b> · <b>${npag}</b> de <b>${cs.length}</b> pagaron · <b>${money(cs.length ? r.total/cs.length : 0)}</b> c/u` })
+      + (g.notas ? `<p class="small muted" style="margin:-4px 0 12px">📝 ${esc(g.notas)}</p>` : '')
+      + listaPagos(cs, filtro, c => [jName(c.jugador_id), ''])
+      + `<div class="linkrow"><button type="button" class="linkish" id="editG2">Editar juego</button>${isAdmin()?'<button type="button" class="linkish danger" id="delG">Eliminar juego</button>':''}</div>`;
+    $('#dlgFoot').innerHTML = (npend ? `<button class="btn primary grow" id="payAllG">Cobrar todos (${npend})</button>` : `<span class="pill ok grow" style="text-align:center;padding:8px">✓ Todos pagaron</span>`)
+      + '<button class="btn wa" id="waG">WhatsApp</button>';
+    bindPagos($('#dlgBody'), c => jName(c.jugador_id), render);
+    $('#payAllG')?.addEventListener('click', async () => {
+      const ids = cs.filter(c=>!c.pagado).map(c=>c.id);
+      if (!await confirmar(`¿Marcar a los ${ids.length} pendientes como pagados (${money(r.pendiente)})?`, 'Sí, cobrar')) return;
+      await setPagado(ids, true, true); render('todos');
+      toast('Juego liquidado', 'Deshacer', async () => { await setPagado(ids, false, true); render('pend'); });
+    });
+    $('#editG').onclick = $('#editG2').onclick = () => { editando = true; render(); };
     $('#waG').onclick = () => compartir(txtJuego(g));
     $('#delG')?.addEventListener('click', async () => { if (await borrarJuego(gid)) dlg.close(); });
   };
@@ -830,6 +933,7 @@ function verJuego(gid, modo){
     f.torneo.onchange = () => { pintar(); }; f.campo.onchange = sug; f.namp.onchange = sug;
     f.costo.oninput = () => { $('#eHint').textContent = 'Costo capturado a mano'; $('#eHint').className = 'hint base'; calc(); };
     $('#eCancel').onclick = () => { editando = false; render(); };
+    $('#dlgSub').textContent = '';
     bindAddPlayer('e', () => Number(f.torneo.value), id => { pintar(); const i = $('#eRoster').querySelector(`input[value="${id}"]`); if (i) { i.checked = true; i.parentElement.classList.add('on'); } calc(); });
     pintar();
     f.onsubmit = async e => {
@@ -962,6 +1066,7 @@ async function vUsuarios(){
 }
 
 const dlg = $('#dlg');
+dlg.addEventListener('close', () => { ['#dlgSub','#dlgActs','#dlgFoot'].forEach(x => $(x).innerHTML = ''); });
 function confirmar(msg, si='Sí, continuar'){
   return new Promise(res => { const c = $('#cdlg'); $('#cMsg').textContent = msg; $('#cSi').textContent = si;
     const fin = v => { c.close(); res(v); }; $('#cSi').onclick = () => fin(true); $('#cNo').onclick = () => fin(false); c.oncancel = () => res(false); c.showModal(); $('#cNo').focus(); });

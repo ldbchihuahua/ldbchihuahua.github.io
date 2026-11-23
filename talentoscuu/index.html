@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Talentos CUU">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Graduate&family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -29,16 +29,16 @@ html,body{margin:0}
 body{background:var(--soft);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;padding-bottom:env(safe-area-inset-bottom,0)}
 [hidden]{display:none!important}
 .top{background:var(--purple-deep);color:#fff;padding:12px max(16px,env(safe-area-inset-left)) 0;padding-top:max(12px,env(safe-area-inset-top))}
-.top .row{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.top .row{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:12px}
 .top img{width:44px;height:44px;border-radius:50%;background:#fff;border:2px solid var(--gold);object-fit:contain}
 .top h1{font-family:var(--display);font-weight:400;font-size:1.25rem;margin:0;line-height:1.1;text-transform:uppercase}
 .top .who{margin-left:auto;text-align:right;font-size:.85rem;opacity:.9}
 .top .who b{font-family:var(--label);letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
 .top .who button{background:none;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:2px 8px;margin-left:6px;cursor:pointer;font:inherit}
-nav{max-width:1100px;margin:10px auto 0;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+nav{max-width:1240px;margin:10px auto 0;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
 nav button{font-family:var(--label);font-weight:700;font-size:1rem;letter-spacing:.05em;text-transform:uppercase;background:transparent;color:#d9cff2;border:0;padding:9px 11px;border-radius:8px 8px 0 0;cursor:pointer;white-space:nowrap}
 nav button[aria-current="page"]{background:var(--soft);color:var(--purple-deep)}
-main{max-width:1100px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-left)) 40px}
+main{max-width:1240px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-left)) 40px}
 h2{font-family:var(--label);font-size:1.4rem;letter-spacing:.05em;text-transform:uppercase;color:var(--purple-deep);margin:0 0 12px}
 h3{font-family:var(--label);font-size:1.1rem;letter-spacing:.05em;text-transform:uppercase;color:var(--purple-deep);margin:18px 0 8px}
 .card{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px}
@@ -105,6 +105,54 @@ dialog .bd{padding:16px 18px;max-height:70vh;overflow:auto}
 .install{background:var(--gold);color:#241900;border:0;border-radius:6px;padding:3px 10px;margin-left:6px;cursor:pointer;font-family:var(--label);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .hint{font-size:.85rem;color:var(--purple-deep);background:#ece5fb;border-radius:6px;padding:4px 8px;margin-top:4px;text-transform:none;letter-spacing:0;font-family:var(--body);font-weight:600}
 .hint.base{background:#fdf3dc;color:var(--gold-ink)}
+/* --- Responsivo y plataformas --- */
+button,a,label,input,select,summary{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+input,select,textarea{font-size:16px} /* iOS no hace zoom al enfocar */
+label>input,label>select,label>textarea,.pw>input{width:100%;max-width:100%}
+.g2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+.g-campo{grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,2fr)}
+.kpis{background:var(--bg)}
+.kpis>div{box-shadow:0 0 0 .5px var(--line)}
+.kpis:has(>div:nth-child(6)){grid-template-columns:repeat(6,minmax(0,1fr))}
+.kpis:has(>div:nth-child(4)):not(:has(>div:nth-child(5))){grid-template-columns:repeat(4,minmax(0,1fr))}
+.kpis:has(>div:nth-child(3)):not(:has(>div:nth-child(4))){grid-template-columns:repeat(3,minmax(0,1fr))}
+nav .adm-more{display:none}
+.plat{font-size:.85rem;color:var(--muted);text-align:center;margin-top:12px}
+.guia ol{margin:0;padding-left:22px;line-height:1.9}
+.guia .ico{display:inline-block;vertical-align:-4px;width:20px;height:20px}
+.kbd{font-family:var(--body);font-size:.8rem;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;color:var(--muted)}
+html:not([data-device=desktop]) .only-desk{display:none}
+@media (max-width:1199px){
+  nav .adm{display:none}
+  nav .adm-more{display:block}
+}
+@media (max-width:1099px){
+  .mlist.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:10px}
+  .mlist.games .mi{margin:0}
+  table.desk.games{display:none}
+}
+@media (max-width:1000px){
+  .kpis:has(>div:nth-child(6)){grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:379px){
+  .g2{grid-template-columns:minmax(0,1fr)!important}
+  .top h1 small{display:none}
+  .stickybar .btn .xs-hide{display:none}
+  .card{padding:12px}
+}
+@media (hover:hover){.mi:hover{border-color:var(--purple)}}
+/* Celular acostado: encabezado compacto para dejar espacio al contenido */
+@media (max-height:500px) and (pointer:coarse){
+  html .top{padding-top:max(6px,env(safe-area-inset-top));padding-bottom:6px}
+  html .top img{width:32px;height:32px}
+  html .top h1{font-size:1rem}
+  html .top h1 small{display:none}
+  html .bnav{grid-template-columns:repeat(4,1fr)}
+  html .bnav button{flex-direction:row;justify-content:center;gap:8px;padding:6px 2px}
+  html .bnav svg{width:20px;height:20px}
+  html main{padding-bottom:70px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+  html .stickybar{bottom:calc(44px + env(safe-area-inset-bottom,0px))}
+}
 /* --- UX v2 --- */
 .mlist{display:none}
 .mi{display:block;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:var(--bg);cursor:pointer}
@@ -141,7 +189,8 @@ details.more summary{cursor:pointer;color:var(--purple);font-family:var(--label)
 .steps li.done{opacity:.6}.steps li.done::before{content:"✓";background:var(--ok)}
 .steps li .btn{margin-left:auto}
 .paybox{width:26px;height:26px}
-@media (max-width:700px){
+@media (max-width:700px), (max-height:500px) and (pointer:coarse){
+  .top .who button{display:none} /* Instalar y Salir viven en «Más» */
   nav{display:none}
   .top{padding-bottom:10px}
   .bnav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--bg);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0);box-shadow:0 -4px 14px rgba(30,15,70,.08)}
@@ -157,12 +206,14 @@ details.more summary{cursor:pointer;color:var(--purple);font-family:var(--label)
   .stickybar .sum .tl{display:none}
   .mlist{display:block}
   table.desk{display:none}
-  .g-campo{grid-template-columns:1fr 84px}
+  .g-campo{grid-template-columns:minmax(0,1fr) 84px}
   .g-campo label:last-child{grid-column:1/-1}
   .card{padding:14px}
   #dlg{max-width:100vw;width:100vw;height:100dvh;max-height:100dvh;margin:0;border-radius:0}
   #dlg .bd{max-height:calc(100dvh - 62px)}
-  .kpis{grid-template-columns:1fr 1fr}
+  .kpis.kpis.kpis.kpis:has(>div){grid-template-columns:repeat(2,minmax(0,1fr))}
+  table.resp td{flex-wrap:wrap}
+  table.resp td[style]{white-space:normal}
   .kpis dd{font-size:1.15rem}
   /* Tablas anchas se vuelven tarjetas */
   table.resp thead{display:none}
@@ -270,6 +321,7 @@ details.more summary{cursor:pointer;color:var(--purple);font-family:var(--label)
       <button data-tab="jugadores" class="adm">Jugadores</button>
       <button data-tab="conceptos" class="adm">Conceptos</button>
       <button data-tab="usuarios" class="adm">Usuarios</button>
+      <button data-tab="mas" class="adm-more">Administrar ▾</button>
     </nav>
   </header>
   <main id="main"></main>
@@ -349,7 +401,7 @@ async function entrar(user, nombre){
   rol = data;
   if (rol === 'pendiente') return show('vPend');
   $('#whoName').textContent = user.email; $('#whoRol').textContent = rol;
-  document.querySelectorAll('nav .adm').forEach(b => b.hidden = !isAdmin());
+  document.querySelectorAll('nav .adm, nav .adm-more').forEach(b => b.hidden = !isAdmin());
   show('vApp');
   main().innerHTML = '<div class="loading">Cargando…</div>';
   await cargar();
@@ -426,7 +478,7 @@ function menuMas(){
   $('#dlgTitle').textContent = 'Más opciones';
   $('#dlgBody').innerHTML = `<div class="sheet">${isAdmin()?ADMIN_TABS.map(([t,l])=>`<button data-go="${t}">${l}</button>`).join(''):''}
     ${$('#btnInstall').hidden?'':'<button data-go="__install">Instalar la app</button>'}
-    <button data-go="__salir">Salir (${esc(me?.email||'')})</button></div>`;
+    <button data-go="__salir">Salir (${esc(me?.email||'')})</button></div><p class="plat">${esc(plataformaTxt())}</p>`;
   $('#dlgBody').querySelectorAll('[data-go]').forEach(b => b.onclick = () => { dlg.close(); const t = b.dataset.go;
     if (t==='__salir') logout(); else if (t==='__install') $('#btnInstall').click(); else go(t); });
   dlg.onclose = null; dlg.showModal();
@@ -443,7 +495,7 @@ const main = () => $('#main');
 // ---------- WhatsApp ----------
 function compartir(texto){
   const url = 'https://wa.me/?text=' + encodeURIComponent(texto);
-  if (navigator.share && matchMedia('(pointer:coarse)').matches) navigator.share({ text:texto }).catch(()=>{});
+  if (navigator.share && DEV.device !== 'desktop') navigator.share({ text:texto }).catch(()=>{});
   else { const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; document.body.append(a); a.click(); a.remove(); }
 }
 function txtJuego(g){
@@ -596,13 +648,14 @@ function vNuevo(){
       </div>
     </details>
     <h3>¿Quién asistió?</h3>
+    <p class="small muted only-desk" style="margin:-4px 0 8px">Atajo: <span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> guarda el juego.</p>
     <div class="actions" style="margin-top:0"><button type="button" class="btn sm" id="selAll">Todos</button><button type="button" class="btn sm" id="selNone">Ninguno</button><span class="small muted" id="rosterInfo"></span></div>
     <div class="search" id="rSearchBox" hidden><input id="rSearch" type="search" placeholder="Buscar pelotero…" autocomplete="off"></div>
     <div class="roster" id="roster"></div>
     ${addPlayerHTML('n')}
     <div class="stickybar">
       <div class="sum"><span><b id="nAsis">0</b> asist.</span><span><b id="porJ">—</b> c/u</span><span class="tl">Total <b id="tot">—</b></span></div>
-      <button class="btn primary" id="btnGuardar">Guardar juego</button>
+      <button class="btn primary" id="btnGuardar">Guardar<span class="xs-hide"> juego</span></button>
     </div>
   </form>`;
   const f = $('#fJuego');
@@ -632,6 +685,7 @@ function vNuevo(){
     f.costo.value = r.costo; $('#costoHint').textContent = r.txt; $('#costoHint').className = 'hint'+(r.base?' base':'');
     if ($('#roster').children.length) calc();
   }
+  f.onkeydown = e => { if (e.key==='Enter' && (e.ctrlKey||e.metaKey)) { e.preventDefault(); f.requestSubmit(); } };
   bindAddPlayer('n', () => Number(f.torneo.value), id => { const keep = new Set([...$('#roster').querySelectorAll('input:checked')].map(i=>Number(i.value))); keep.add(id); pintarRoster(keep); });
   f.torneo.onchange = () => pintarRoster(); f.campo.onchange = sugerir; f.namp.onchange = sugerir;
   f.costo.oninput = () => { $('#costoHint').textContent = 'Costo capturado a mano'; $('#costoHint').className = 'hint base'; calc(); };
@@ -694,14 +748,14 @@ function vJuegos(){
 }
 function tablaJuegos(juegos){
   if (!juegos.length) return '<p class="muted">Sin juegos registrados.</p>';
-  const ml = `<div class="mlist">${juegos.map(g => { const cs = S.cargos.filter(c=>c.juego_id===g.id), r = resumen(cs);
+  const ml = `<div class="mlist games">${juegos.map(g => { const cs = S.cargos.filter(c=>c.juego_id===g.id), r = resumen(cs);
     return `<div class="mi" data-g="${g.id}"><div class="r1"><span class="t">${fdate(g.fecha).toUpperCase()} · vs ${esc(g.rival)}</span>${r.pendiente<=0.004?'<span class="pill ok">Liquidado</span>':`<span class="amt warn">${money(r.pendiente)}</span>`}</div>
       <div class="sub">${esc(tName(g.torneo_id))}${g.campo_id?' · '+esc(campoName(g.campo_id))+' · '+(g.num_ampayers||1)+' amp.':''} · ${cs.length} asist. · ${money(r.total)}</div>
       <div class="bar"><i style="width:${pct(r.pagado,r.total)}%"></i></div>
       <div class="r3"><span class="small muted">Cobrado ${money(r.pagado)}</span><span><button class="btn sm" data-ge="${g.id}">Editar</button>${isAdmin()?` <button class="btn sm danger" data-gd="${g.id}">Borrar</button>`:''}</span></div></div>`; }).join('')}</div>`;
-  return ml + `<div class="scroll"><table class="desk"><thead><tr><th>Fecha</th><th>Torneo</th><th>Rival</th><th>Campo</th><th>Concepto</th><th class="num">Asist.</th><th class="num">Total</th><th class="num">Cobrado</th><th class="num">Pendiente</th><th></th><th></th></tr></thead><tbody>
+  return ml + `<div class="scroll"><table class="desk games"><thead><tr><th>Fecha</th><th>Torneo</th><th>Rival</th><th>Campo</th><th class="num">Asist.</th><th class="num">Total</th><th class="num">Cobrado</th><th class="num">Pendiente</th><th></th><th></th></tr></thead><tbody>
     ${juegos.map(g => { const cs = S.cargos.filter(c=>c.juego_id===g.id), r = resumen(cs);
-      return `<tr class="click" data-g="${g.id}"><td>${fdate(g.fecha)}</td><td>${esc(tName(g.torneo_id))}</td><td>vs ${esc(g.rival)}</td><td>${esc(campoName(g.campo_id)||'—')}${g.campo_id?` <span class="muted small">(${g.num_ampayers||1})</span>`:''}</td><td>${esc(g.concepto_id?cName(g.concepto_id):'—')}</td><td class="num">${cs.length}</td><td class="num">${money(r.total)}</td><td class="num">${money(r.pagado)}</td><td class="num">${money(r.pendiente)}</td><td>${r.pendiente<=0.004?'<span class="pill ok">Liquidado</span>':'<span class="pill warn">Pendiente</span>'}</td><td style="white-space:nowrap"><button class="btn sm" data-ge="${g.id}">Editar</button>${isAdmin()?` <button class="btn sm danger" data-gd="${g.id}">Borrar</button>`:''}</td></tr>`; }).join('')}
+      return `<tr class="click" data-g="${g.id}"><td>${fdate(g.fecha)}</td><td>${esc(tName(g.torneo_id))}</td><td>vs ${esc(g.rival)}</td><td>${esc(campoName(g.campo_id)||'—')}${g.campo_id?` <span class="muted small">(${g.num_ampayers||1})</span>`:''}</td><td class="num">${cs.length}</td><td class="num">${money(r.total)}</td><td class="num">${money(r.pagado)}</td><td class="num">${money(r.pendiente)}</td><td>${r.pendiente<=0.004?'<span class="pill ok">Liquidado</span>':'<span class="pill warn">Pendiente</span>'}</td><td style="white-space:nowrap"><button class="btn sm" data-ge="${g.id}">Editar</button>${isAdmin()?` <button class="btn sm danger" data-gd="${g.id}">Borrar</button>`:''}</td></tr>`; }).join('')}
     </tbody></table></div>`;
 }
 function bindJuegos(root){
@@ -944,16 +998,58 @@ document.querySelectorAll('input[type=password]').forEach(inp => {
 // ---------- Instalación (PWA) ----------
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js', { scope:'./', updateViaCache:'none' }).then(r => r.update()).catch(()=>{});
 let installEvt = null;
-const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+// Detecta sistema, tipo de dispositivo y navegador para adaptar la experiencia
+const DEV = (() => {
+  const ua = navigator.userAgent, uad = navigator.userAgentData;
+  const iPadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+  let os = 'desktop', nombre = 'Computadora', device = 'desktop';
+  if (/iphone|ipod/i.test(ua)) { os = 'ios'; nombre = 'iPhone'; device = 'phone'; }
+  else if (/ipad/i.test(ua) || iPadOS) { os = 'ios'; nombre = 'iPad'; device = 'tablet'; }
+  else if (/android/i.test(ua)) { os = 'android'; nombre = /mobile/i.test(ua) ? 'Android' : 'Tablet Android'; device = /mobile/i.test(ua) ? 'phone' : 'tablet'; }
+  else { const p = (uad && uad.platform) || navigator.platform || ''; nombre = /win/i.test(p) ? 'Windows' : /mac/i.test(p) ? 'Mac' : /cros/i.test(ua) ? 'Chromebook' : /linux/i.test(p) ? 'Linux' : 'Computadora'; }
+  const browser = /CriOS/.test(ua) ? 'Chrome' : /FxiOS/.test(ua) ? 'Firefox' : /EdgiOS|EdgA|Edg\//.test(ua) ? 'Edge' : /SamsungBrowser/.test(ua) ? 'Samsung Internet'
+    : /OPR\/|Opera/.test(ua) ? 'Opera' : /Firefox\//.test(ua) ? 'Firefox' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : 'Navegador';
+  return { os, nombre, device, browser };
+})();
+const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+document.documentElement.dataset.os = DEV.os;
+document.documentElement.dataset.device = DEV.device;
+document.documentElement.dataset.standalone = standalone();
+const isIOS = DEV.os === 'ios';
+const plataformaTxt = () => `${DEV.nombre} · ${DEV.browser} · ${standalone() ? 'app instalada' : 'en el navegador'}`;
+
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; $('#btnInstall').hidden = false; });
-addEventListener('appinstalled', () => { $('#btnInstall').hidden = true; toast('App instalada'); });
-if (isIOS && !standalone()) $('#btnInstall').hidden = false;
-$('#btnInstall').onclick = async () => {
-  if (installEvt) { installEvt.prompt(); await installEvt.userChoice; installEvt = null; $('#btnInstall').hidden = true; return; }
-  $('#dlgTitle').textContent = 'Instalar en iPhone / iPad';
-  $('#dlgBody').innerHTML = '<ol style="margin:0;padding-left:20px;line-height:1.9"><li>Abre esta página en <b>Safari</b>.</li><li>Toca el botón <b>Compartir</b> (cuadro con flecha hacia arriba).</li><li>Elige <b>Agregar a pantalla de inicio</b> y luego <b>Agregar</b>.</li></ol>';
+addEventListener('appinstalled', () => { $('#btnInstall').hidden = true; document.documentElement.dataset.standalone = true; toast('App instalada'); });
+if (!standalone()) $('#btnInstall').hidden = false;
+
+const IC_SHARE = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v8h14v-8"/></svg>';
+const IC_DOTS = '<svg class="ico" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
+function guiaInstalar(){
+  const B = DEV.browser; let titulo = 'Instalar la app', pasos = '';
+  if (DEV.os === 'ios') {
+    titulo = `Instalar en ${DEV.nombre}`;
+    pasos = B === 'Safari'
+      ? `<li>Toca el botón <b>Compartir</b> ${IC_SHARE} ${DEV.device==='phone'?'en la barra de abajo':'arriba a la derecha'}.</li><li>Desliza y elige <b>Agregar a pantalla de inicio</b>.</li><li>Toca <b>Agregar</b>. El ícono de Talentos aparecerá en tu pantalla.</li>`
+      : `<li>Toca <b>Compartir</b> ${IC_SHARE} en la barra de direcciones de ${esc(B)}.</li><li>Elige <b>Agregar a pantalla de inicio</b>.</li><li>Si no aparece la opción, abre esta página en <b>Safari</b> y repite.</li>`;
+  } else if (DEV.os === 'android') {
+    titulo = 'Instalar en Android';
+    pasos = B === 'Samsung Internet'
+      ? `<li>Toca el menú <b>☰</b> abajo a la derecha.</li><li>Elige <b>Agregar página a › Pantalla de inicio</b>.</li>`
+      : `<li>Toca el menú ${IC_DOTS} arriba a la derecha de ${esc(B)}.</li><li>Elige <b>Instalar app</b> o <b>Agregar a pantalla principal</b>.</li><li>Confirma con <b>Instalar</b>.</li>`;
+  } else {
+    titulo = `Instalar en ${DEV.nombre}`;
+    pasos = B === 'Safari' ? `<li>En la barra de menú elige <b>Archivo › Agregar al Dock</b>.</li><li>Confirma con <b>Agregar</b>.</li>`
+      : B === 'Firefox' ? `<li>Firefox no instala apps web en computadora.</li><li>Abre esta página en <b>Chrome</b> o <b>Edge</b> y usa el botón <b>Instalar</b>.</li>`
+      : `<li>Haz clic en el ícono de <b>instalar</b> (monitor con flecha) al final de la barra de direcciones.</li><li>O abre el menú ${IC_DOTS} y elige <b>Instalar Talentos CUU</b> (en Edge: <b>Apps › Instalar este sitio como app</b>).</li>`;
+  }
+  $('#dlgTitle').textContent = titulo;
+  $('#dlgBody').innerHTML = `<div class="guia"><ol>${pasos}</ol><p class="plat">Detectado: ${esc(plataformaTxt())}</p></div>`;
   dlg.onclose = null; dlg.showModal();
+}
+$('#btnInstall').onclick = async () => {
+  if (installEvt) { installEvt.prompt(); const r = await installEvt.userChoice; installEvt = null; if (r.outcome === 'accepted') $('#btnInstall').hidden = true; return; }
+  if (standalone()) return toast('Ya estás usando la app instalada');
+  guiaInstalar();
 };
 boot();
 </script>

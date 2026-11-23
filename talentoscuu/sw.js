@@ -1,5 +1,5 @@
 // Talentos CUU: la app se puede instalar y abre sin señal (los datos de Supabase siempre se piden en línea).
-const CACHE = 'tc-v4';
+const CACHE = 'tc-v5';
 const PRECACHE = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', '../equipos/talentos.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.allSettled(PRECACHE.map(u => c.add(u)))).then(() => self.skipWaiting()));

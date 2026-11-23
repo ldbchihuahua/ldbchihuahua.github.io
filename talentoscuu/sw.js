@@ -13,7 +13,7 @@ self.addEventListener('fetch', e => {
   // Red primero (siempre la versión más nueva); si no hay señal, lo guardado
   // La página y archivos propios se piden sin caché del navegador para ver siempre la última versión
   const own = url.origin === location.origin;
-  e.respondWith(fetch(own ? new Request(req, { cache:'no-store' }) : req).then(r => {
+  e.respondWith((own ? fetch(req.url, { cache:'no-store' }) : fetch(req)).then(r => {
     if (r.ok && (url.origin === location.origin || url.hostname.includes('jsdelivr') || url.hostname.includes('gstatic') || url.hostname.includes('googleapis'))) {
       const cp = r.clone(); caches.open(CACHE).then(c => c.put(req, cp));
     }

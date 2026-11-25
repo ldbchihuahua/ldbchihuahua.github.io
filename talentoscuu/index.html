@@ -598,7 +598,6 @@ function txtJuego(g){
   }
   if (!pend.length) L.push('🎉 *¡Juego liquidado, gracias a todos!*', '');
   if (cj.esperada > 0.004) L.push(`💰 Caja del juego: +${money(cj.esperada)}`);
-  if (pend.length) L.push(`🙏 _Favor de entregar tu cuota al mánager._`);
   return L.filter(x => x !== null).join('\n').trim();
 }
 function txtAdeudos(tid){

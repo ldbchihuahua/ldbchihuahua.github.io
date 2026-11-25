@@ -65,6 +65,9 @@ tfoot td{font-weight:700;border-top:2px solid var(--line);border-bottom:0}
 .kpis div{background:var(--bg);padding:12px 14px}
 .kpis dt{font-family:var(--label);font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold-ink);font-weight:700}
 .kpis dd{margin:2px 0 0;font-weight:700;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.kpis dd small{display:block;font-size:.78rem;font-weight:600;color:var(--muted);margin-top:2px}
+.kpis .cajak{background:#fdf6e3}
+.kpis .cajak dd{color:var(--gold-ink)}
 .kpis dd.ok{color:var(--ok)} .kpis dd.warn{color:var(--warn)}
 .bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;min-width:70px}
 .bar i{display:block;height:100%;background:var(--ok)}
@@ -251,7 +254,8 @@ details.more summary{cursor:pointer;color:var(--purple);font-family:var(--label)
   .stickybar .sum{gap:8px;font-size:.9rem;flex-wrap:nowrap;white-space:nowrap;overflow:hidden}
   .stickybar .sum b{font-size:1rem}
   .stickybar .btn{padding:8px 12px;white-space:nowrap}
-  .stickybar .sum .tl{display:none}
+  .stickybar .sum .tl,.stickybar .sum .lbl,.stickybar .btn .xs-hide{display:none}
+  .stickybar .sum .cj b{color:var(--gold-ink)}
   .mlist{display:block}
   table.desk{display:none}
   .g-campo{grid-template-columns:minmax(0,1fr) 84px}
@@ -393,7 +397,8 @@ const SUPABASE_ANON_KEY = 'sb_publishable_hFJLBtUaK6DuOe-FZFqUWg_ncj13tJQ'; // �
 
 const $ = s => document.querySelector(s);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const money = n => (Number(n)||0).toLocaleString('es-MX',{style:'currency',currency:'MXN'});
+const money = n => { const v = Math.round((Number(n)||0)*100)/100; return v.toLocaleString('es-MX',{style:'currency',currency:'MXN',minimumFractionDigits: Number.isInteger(v)?0:2, maximumFractionDigits:2}); };
+const fdateW = s => s ? new Date(s+'T12:00:00').toLocaleDateString('es-MX',{weekday:'short',day:'numeric',month:'short'}).replace(/\./g,'') : '';
 const today = () => { const d = new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
 const fdate = s => s ? new Date(s+'T12:00:00').toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'}) : '';
 const pct = (a,b) => b>0 ? Math.round(a*100/b) : 0;
@@ -514,10 +519,18 @@ function tarifa(tid, campoId, n){
 const rosterOf = tid => S.roster.filter(r => r.torneo_id === tid).map(r => byId(S.jugadores, r.jugador_id)).filter(j => j && j.activo).sort((a,b)=>a.nombre.localeCompare(b.nombre));
 
 // Reparte el total en centavos para que la suma cuadre exacto
-function repartir(total, n){
-  if (!n) return [];
-  const c = Math.round(total*100), base = Math.floor(c/n), resto = c - base*n;
-  return Array.from({length:n}, (_,i) => (base + (i<resto?1:0))/100);
+// Cuota por pelotero: costo / asistentes, redondeado hacia ARRIBA a pesos cerrados. Lo que sobra va a la caja.
+function cuota(total, n){ return n ? Math.ceil(Math.round((Number(total)||0)*100) / n / 100 - 1e-9) : 0; }
+function repartir(total, n){ return n ? Array(n).fill(cuota(total, n)) : []; }
+// Caja de un conjunto de juegos: esperada = lo cobrado de más sobre el costo; acumulada = lo que ya entró de ese sobrante
+function caja(juegos){
+  let esperada = 0, acumulada = 0, costo = 0;
+  juegos.forEach(g => {
+    const cs = S.cargos.filter(c=>c.juego_id===g.id), r = resumen(cs), ct = Number(g.costo_total)||0;
+    const extra = Math.max(0, r.total - ct);
+    costo += ct; esperada += extra; acumulada += Math.min(extra, Math.max(0, r.pagado - ct));
+  });
+  return { esperada, acumulada, costo };
 }
 
 function resumen(cargos){
@@ -553,24 +566,60 @@ function compartir(texto){
   if (navigator.share && DEV.device !== 'desktop') navigator.share({ text:texto }).catch(()=>{});
   else { const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; document.body.append(a); a.click(); a.remove(); }
 }
+// Mensajes de WhatsApp: encabezado, datos del juego, cuota destacada, listas numeradas y cierre
+const LINEA = '━━━━━━━━━━━━━━';
 function txtJuego(g){
   const cs = S.cargos.filter(c=>c.juego_id===g.id).sort((a,b)=>jName(a.jugador_id).localeCompare(jName(b.jugador_id)));
-  const r = resumen(cs), pend = cs.filter(c=>!c.pagado), pag = cs.filter(c=>c.pagado);
-  return [`⚾ *TALENTOS CUU · ${cName(g.concepto_id)!=='—'?cName(g.concepto_id):'AMPAYEO'}*`,
-    `${fdate(g.fecha).toUpperCase()} vs ${g.rival}`,
-    `${tName(g.torneo_id)}${g.campo_id?' · '+campoName(g.campo_id)+' · '+(g.num_ampayers||1)+' AMPAYER'+((g.num_ampayers||1)>1?'S':''):''}`,
-    `Total ${money(r.total)} · ${cs.length} asistentes · ${money(cs.length?r.total/cs.length:0)} c/u`, '',
-    pend.length ? `⏳ *Pendientes (${money(r.pendiente)}):*\n` + pend.map(c=>`• ${jName(c.jugador_id)} ${money(c.monto)}`).join('\n') : '✅ *Todos pagaron*',
-    pag.length && pend.length ? `\n✅ Pagaron: ${pag.map(c=>jName(c.jugador_id)).join(', ')}` : ''].join('\n').trim();
+  const r = resumen(cs), pend = cs.filter(c=>!c.pagado), pag = cs.filter(c=>c.pagado), cj = caja([g]);
+  const cu = Math.max(0, ...cs.map(c=>Number(c.monto)));
+  const amp = g.num_ampayers||1;
+  const L = [
+    `⚾ *TALENTOS CUU*`,
+    `*${g.concepto_id ? cName(g.concepto_id) : 'AMPAYEO'} · vs ${g.rival}*`,
+    LINEA,
+    `📅 ${fdateW(g.fecha)}`,
+    `🏆 ${tName(g.torneo_id)}`,
+    g.campo_id ? `📍 ${campoName(g.campo_id)} · ${amp} ampayer${amp>1?'s':''}` : null,
+    '',
+    `💵 Ampayeo: ${money(g.costo_total)}`,
+    `👥 Asistieron: ${cs.length}`,
+    `👉 *Cuota: ${money(cu)} por jugador*`,
+    LINEA,
+  ];
+  if (pend.length) {
+    L.push(`⏳ *PENDIENTES (${pend.length}) · ${money(r.pendiente)}*`);
+    pend.forEach((c,i) => L.push(`${i+1}. ${jName(c.jugador_id)}${Number(c.monto)!==cu ? ' — '+money(c.monto) : ''}`));
+    L.push('');
+  }
+  if (pag.length) {
+    L.push(`✅ *PAGARON (${pag.length})*`);
+    pag.forEach(c => L.push(`▫️ ${jName(c.jugador_id)}`));
+    L.push('');
+  }
+  if (!pend.length) L.push('🎉 *¡Juego liquidado, gracias a todos!*', '');
+  if (cj.esperada > 0.004) L.push(`💰 Caja del juego: +${money(cj.esperada)}`);
+  if (pend.length) L.push(`🙏 _Favor de entregar tu cuota al mánager._`);
+  return L.filter(x => x !== null).join('\n').trim();
 }
 function txtAdeudos(tid){
-  const ids = new Set(S.juegos.filter(g=>!tid || g.torneo_id===tid).map(g=>g.id));
+  const juegos = S.juegos.filter(g=>!tid || g.torneo_id===tid), ids = new Set(juegos.map(g=>g.id));
   const deuda = new Map();
-  S.cargos.filter(c=>ids.has(c.juego_id) && !c.pagado).forEach(c => deuda.set(c.jugador_id, (deuda.get(c.jugador_id)||0) + Number(c.monto)));
-  const filas = [...deuda.entries()].sort((a,b)=>b[1]-a[1]);
-  const tot = filas.reduce((s,x)=>s+x[1],0);
-  return [`⚾ *TALENTOS CUU · Adeudos de ampayeo*`, tid ? tName(tid) : 'Todos los torneos', `Corte al ${fdate(today()).toUpperCase()}`, '',
-    filas.length ? filas.map(([j,m])=>`• ${jName(j)}: ${money(m)}`).join('\n') + `\n\n*Total pendiente: ${money(tot)}*` : '✅ Nadie tiene adeudos'].join('\n');
+  S.cargos.filter(c=>ids.has(c.juego_id) && !c.pagado).forEach(c => { const o = deuda.get(c.jugador_id) || { m:0, n:0 }; o.m += Number(c.monto); o.n++; deuda.set(c.jugador_id, o); });
+  const filas = [...deuda.entries()].sort((a,b)=>b[1].m-a[1].m || jName(a[0]).localeCompare(jName(b[0])));
+  const tot = filas.reduce((s,x)=>s+x[1].m,0), cj = caja(juegos);
+  const L = [`⚾ *TALENTOS CUU*`, `*Adeudos de ampayeo*`, LINEA, `🏆 ${tid ? tName(tid) : 'Todos los torneos'}`, `📅 Corte: ${fdateW(today())}`, LINEA];
+  if (filas.length) {
+    filas.forEach(([j,o],i) => L.push(`${i+1}. ${jName(j)} — *${money(o.m)}*${o.n>1?` (${o.n} juegos)`:''}`));
+    L.push(LINEA, `💵 *Total pendiente: ${money(tot)}*`, `👥 ${filas.length} jugador${filas.length!==1?'es':''} con adeudo`);
+  } else L.push('✅ *¡Nadie tiene adeudos!*');
+  L.push(`💰 Caja acumulada: ${money(cj.acumulada)}`, '', `🙏 _Favor de ponerse al corriente con el mánager. ¡Gracias!_`);
+  return L.join('\n');
+}
+function txtRecordatorio(jid, cs, juegosMap){
+  const pend = cs.filter(c=>!c.pagado), tot = pend.reduce((s,c)=>s+Number(c.monto),0);
+  return [`⚾ *TALENTOS CUU*`, `Hola 👋, te compartimos el adeudo de ampayeo de *${jName(jid)}*:`, LINEA,
+    ...pend.map(c => { const g = juegosMap.get(c.juego_id); return `• ${fdateW(g.fecha)} vs ${g.rival} — *${money(c.monto)}*`; }),
+    LINEA, `💵 *Total: ${money(tot)}*`, '', `🙏 _Puedes entregarlo al mánager. ¡Gracias!_`].join('\n');
 }
 
 // ---------- Dashboard ----------
@@ -593,6 +642,7 @@ function renderDash(){
   const cargos = S.cargos.filter(c => jids.has(c.juego_id));
   const r = resumen(cargos);
   const deudores = new Set(cargos.filter(c=>!c.pagado).map(c=>c.jugador_id)).size;
+  const cj = caja(juegos);
 
   let html = '';
   if (!S.juegos.length) {
@@ -607,27 +657,27 @@ function renderDash(){
   }
   html += `<div class="actions" style="margin:0 0 10px;justify-content:space-between"><h2 style="margin:0">${tid ? esc(tName(tid)) : 'Consolidado global'}</h2>${r.pendiente>0?'<button class="btn wa sm" id="waDeuda">Compartir adeudos</button>':''}</div>
     <dl class="kpis">
-      <div><dt>Juegos</dt><dd>${juegos.length}</dd></div>
-      <div><dt>Total ampayeo</dt><dd>${money(r.total)}</dd></div>
-      <div><dt>Cobrado</dt><dd class="ok">${money(r.pagado)}</dd></div>
-      <div><dt>Por cobrar</dt><dd class="warn">${money(r.pendiente)}</dd></div>
-      <div><dt>% cobrado</dt><dd>${pct(r.pagado,r.total)}%</dd></div>
-      <div><dt>Con adeudo</dt><dd>${deudores} jug.</dd></div>
+      <div><dt>Juegos</dt><dd>${juegos.length}<small>Ampayeo ${money(cj.costo)}</small></dd></div>
+      <div><dt>A cobrar</dt><dd>${money(r.total)}<small>cuotas de peloteros</small></dd></div>
+      <div><dt>Cobrado</dt><dd class="ok">${money(r.pagado)}<small>${pct(r.pagado,r.total)}% del total</small></dd></div>
+      <div><dt>Por cobrar</dt><dd class="warn">${money(r.pendiente)}<small>${deudores} pelotero${deudores!==1?'s':''} con adeudo</small></dd></div>
+      <div class="cajak"><dt>Caja acumulada</dt><dd>${money(cj.acumulada)}<small>de ${money(cj.esperada)} esperada</small></dd></div>
+      <div><dt>Ampayeo pagado</dt><dd>${money(Math.min(r.pagado - cj.acumulada, cj.costo))}<small>de ${money(cj.costo)}</small></dd></div>
     </dl>`;
 
   if (!tid) {
     // Consolidado por torneo
     const filas = S.torneos.map(t => {
       const gs = S.juegos.filter(g=>g.torneo_id===t.id), ids = new Set(gs.map(g=>g.id));
-      return { t, n: gs.length, ...resumen(S.cargos.filter(c=>ids.has(c.juego_id))) };
+      return { t, n: gs.length, ...resumen(S.cargos.filter(c=>ids.has(c.juego_id))), cj: caja(gs) };
     }).filter(f => f.n > 0 || f.t.activo);
     html += `<div class="card"><h3 style="margin-top:0">Consolidado por torneo / liga</h3>
       <div class="mlist">${filas.map(f => `<div class="mi" data-t="${f.t.id}"><div class="r1"><span class="t">${esc(f.t.nombre)}</span>${f.pendiente>0.004?`<span class="amt warn">${money(f.pendiente)}</span>`:'<span class="pill ok">Al corriente</span>'}</div>
-        <div class="sub">${f.n} juegos · cobrado ${money(f.pagado)} de ${money(f.total)}</div><div class="bar"><i style="width:${pct(f.pagado,f.total)}%"></i></div></div>`).join('')}</div>
+        <div class="sub">${f.n} juegos · cobrado ${money(f.pagado)} de ${money(f.total)} · caja ${money(f.cj.acumulada)}</div><div class="bar"><i style="width:${pct(f.pagado,f.total)}%"></i></div></div>`).join('')}</div>
       <div class="scroll"><table class="desk">
-      <thead><tr><th>Torneo / liga</th><th>Tipo</th><th class="num">Ampayeo</th><th class="num">Juegos</th><th class="num">Total</th><th class="num">Cobrado</th><th class="num">Por cobrar</th><th>Avance</th></tr></thead><tbody>
-      ${filas.map(f => `<tr class="click" data-t="${f.t.id}"><td><b>${esc(f.t.nombre)}</b></td><td>${f.t.tipo}</td><td class="num">${money(f.t.costo_ampayeo)}</td><td class="num">${f.n}</td><td class="num">${money(f.total)}</td><td class="num">${money(f.pagado)}</td><td class="num">${money(f.pendiente)}</td><td><div class="bar"><i style="width:${pct(f.pagado,f.total)}%"></i></div></td></tr>`).join('') || '<tr><td colspan="8" class="muted">Sin torneos todavía.</td></tr>'}
-      </tbody><tfoot><tr><td colspan="3">Total</td><td class="num">${juegos.length}</td><td class="num">${money(r.total)}</td><td class="num">${money(r.pagado)}</td><td class="num">${money(r.pendiente)}</td><td></td></tr></tfoot></table></div></div>`;
+      <thead><tr><th>Torneo / liga</th><th>Tipo</th><th class="num">Ampayeo</th><th class="num">Juegos</th><th class="num">Total</th><th class="num">Cobrado</th><th class="num">Por cobrar</th><th class="num">Caja</th><th>Avance</th></tr></thead><tbody>
+      ${filas.map(f => `<tr class="click" data-t="${f.t.id}"><td><b>${esc(f.t.nombre)}</b></td><td>${f.t.tipo}</td><td class="num">${money(f.t.costo_ampayeo)}</td><td class="num">${f.n}</td><td class="num">${money(f.total)}</td><td class="num">${money(f.pagado)}</td><td class="num">${money(f.pendiente)}</td><td class="num">${money(f.cj.acumulada)}</td><td><div class="bar"><i style="width:${pct(f.pagado,f.total)}%"></i></div></td></tr>`).join('') || '<tr><td colspan="8" class="muted">Sin torneos todavía.</td></tr>'}
+      </tbody><tfoot><tr><td colspan="3">Total</td><td class="num">${juegos.length}</td><td class="num">${money(r.total)}</td><td class="num">${money(r.pagado)}</td><td class="num">${money(r.pendiente)}</td><td class="num">${money(cj.acumulada)}</td><td></td></tr></tfoot></table></div></div>`;
   }
 
   // Por jugador
@@ -669,7 +719,7 @@ function cuentaJugador(jid, tid){
       + listaPagos(cs, filtro, c => { const g = juegos.get(c.juego_id); return [`${fdate(g.fecha).toUpperCase()} · vs ${g.rival}`, tid ? '' : tName(g.torneo_id)]; });
     $('#dlgFoot').innerHTML = npend ? `<button class="btn primary grow" id="payAll">Cobrar todo</button><button class="btn wa" id="waJ">Recordatorio</button>` : '';
     bindPagos($('#dlgBody'), c => { const g = juegos.get(c.juego_id); return `vs ${g.rival}`; }, render);
-    $('#waJ')?.addEventListener('click', () => compartir([`⚾ *TALENTOS CUU · Ampayeo*`, `Hola, te compartimos el adeudo de *${jName(jid)}*:`, '', ...cs.filter(c=>!c.pagado).map(c=>{ const g = juegos.get(c.juego_id); return `• ${fdate(g.fecha).toUpperCase()} vs ${g.rival}: ${money(c.monto)}`; }), '', `*Total: ${money(r.pendiente)}*`, '¡Gracias!'].join('\n')));
+    $('#waJ')?.addEventListener('click', () => compartir(txtRecordatorio(jid, cs, juegos)));
     $('#payAll')?.addEventListener('click', async () => {
       const ids = cs.filter(c=>!c.pagado).map(c=>c.id);
       if (!await confirmar(`¿Marcar como pagados los ${ids.length} juegos pendientes de ${jName(jid)} (${money(r.pendiente)})?`, 'Sí, cobrar')) return;
@@ -746,7 +796,7 @@ function vNuevo(){
     <div class="roster" id="roster"></div>
     ${addPlayerHTML('n')}
     <div class="stickybar">
-      <div class="sum"><span><b id="nAsis">0</b> asist.</span><span><b id="porJ">—</b> c/u</span><span class="tl">Total <b id="tot">—</b></span></div>
+      <div class="sum"><span><b id="nAsis">0</b><span class="lbl"> asist.</span></span><span><b id="porJ">—</b> c/u</span><span class="cj">caja <b id="cajaN">—</b></span><span class="tl">Total <b id="tot">—</b></span></div>
       <button class="btn primary" id="btnGuardar">Guardar<span class="xs-hide"> juego</span></button>
     </div>
   </form>`;
@@ -769,7 +819,9 @@ function vNuevo(){
     sel.forEach(i => { i.parentElement.classList.toggle('on', i.checked); i.parentElement.querySelector('.amt').textContent = ''; });
     on.forEach((i,k) => i.parentElement.querySelector('.amt').textContent = money(montos[k]));
     $('#nAsis').textContent = on.length;
-    $('#porJ').textContent = on.length ? money((Number(f.costo.value)||0)/on.length) : '—';
+    const cu = cuota(Number(f.costo.value)||0, on.length);
+    $('#porJ').textContent = on.length ? money(cu) : '—';
+    $('#cajaN').textContent = on.length ? '+' + money(cu*on.length - (Number(f.costo.value)||0)) : '—';
     $('#tot').textContent = money(f.costo.value);
   };
   function sugerir(){
@@ -842,12 +894,12 @@ function tablaJuegos(juegos){
   if (!juegos.length) return '<p class="muted">Sin juegos registrados.</p>';
   const ml = `<div class="mlist games">${juegos.map(g => { const cs = S.cargos.filter(c=>c.juego_id===g.id), r = resumen(cs);
     return `<div class="mi" data-g="${g.id}"><div class="r1"><span class="t">${fdate(g.fecha).toUpperCase()} · vs ${esc(g.rival)}</span>${r.pendiente<=0.004?'<span class="pill ok">Liquidado</span>':`<span class="amt warn">${money(r.pendiente)}</span>`}</div>
-      <div class="sub">${esc(tName(g.torneo_id))}${g.campo_id?' · '+esc(campoName(g.campo_id))+' · '+(g.num_ampayers||1)+' amp.':''} · ${cs.length} asist. · ${money(r.total)}</div>
+      <div class="sub">${esc(tName(g.torneo_id))}${g.campo_id?' · '+esc(campoName(g.campo_id))+' · '+(g.num_ampayers||1)+' amp.':''} · ${cs.length} asist. · ${money(r.total)}${(r.total-Number(g.costo_total))>0.004?` · caja +${money(r.total-Number(g.costo_total))}`:''}</div>
       <div class="bar"><i style="width:${pct(r.pagado,r.total)}%"></i></div>
       <div class="r3"><span class="small muted">Cobrado ${money(r.pagado)}</span><span><button class="btn sm" data-ge="${g.id}">Editar</button>${isAdmin()?` <button class="btn sm danger" data-gd="${g.id}">Borrar</button>`:''}</span></div></div>`; }).join('')}</div>`;
-  return ml + `<div class="scroll"><table class="desk games"><thead><tr><th>Fecha</th><th>Torneo</th><th>Rival</th><th>Campo</th><th class="num">Asist.</th><th class="num">Total</th><th class="num">Cobrado</th><th class="num">Pendiente</th><th></th><th></th></tr></thead><tbody>
-    ${juegos.map(g => { const cs = S.cargos.filter(c=>c.juego_id===g.id), r = resumen(cs);
-      return `<tr class="click" data-g="${g.id}"><td>${fdate(g.fecha)}</td><td>${esc(tName(g.torneo_id))}</td><td>vs ${esc(g.rival)}</td><td>${esc(campoName(g.campo_id)||'—')}${g.campo_id?` <span class="muted small">(${g.num_ampayers||1})</span>`:''}</td><td class="num">${cs.length}</td><td class="num">${money(r.total)}</td><td class="num">${money(r.pagado)}</td><td class="num">${money(r.pendiente)}</td><td>${r.pendiente<=0.004?'<span class="pill ok">Liquidado</span>':'<span class="pill warn">Pendiente</span>'}</td><td style="white-space:nowrap"><button class="btn sm" data-ge="${g.id}">Editar</button>${isAdmin()?` <button class="btn sm danger" data-gd="${g.id}">Borrar</button>`:''}</td></tr>`; }).join('')}
+  return ml + `<div class="scroll"><table class="desk games"><thead><tr><th>Fecha</th><th>Torneo</th><th>Rival</th><th>Campo</th><th class="num">Asist.</th><th class="num">Total</th><th class="num">Cobrado</th><th class="num">Pendiente</th><th class="num">Caja</th><th></th><th></th></tr></thead><tbody>
+    ${juegos.map(g => { const cs = S.cargos.filter(c=>c.juego_id===g.id), r = resumen(cs), cj = caja([g]);
+      return `<tr class="click" data-g="${g.id}"><td>${fdate(g.fecha)}</td><td>${esc(tName(g.torneo_id))}</td><td>vs ${esc(g.rival)}</td><td>${esc(campoName(g.campo_id)||'—')}${g.campo_id?` <span class="muted small">(${g.num_ampayers||1})</span>`:''}</td><td class="num">${cs.length}</td><td class="num">${money(r.total)}</td><td class="num">${money(r.pagado)}</td><td class="num">${money(r.pendiente)}</td><td class="num">${cj.esperada>0.004?'+'+money(cj.esperada):'—'}</td><td>${r.pendiente<=0.004?'<span class="pill ok">Liquidado</span>':'<span class="pill warn">Pendiente</span>'}</td><td style="white-space:nowrap"><button class="btn sm" data-ge="${g.id}">Editar</button>${isAdmin()?` <button class="btn sm danger" data-gd="${g.id}">Borrar</button>`:''}</td></tr>`; }).join('')}
     </tbody></table></div>`;
 }
 function bindJuegos(root){
@@ -879,7 +931,7 @@ function verJuego(gid, modo){
     if (editando) { $('#dlgActs').innerHTML = ''; $('#dlgFoot').innerHTML = ''; return renderEditar(g, cs); }
     $('#dlgActs').innerHTML = '<button class="btn sm" id="editG">Editar</button>';
     $('#dlgBody').innerHTML = cobroHTML({ titulo: r.pendiente>0.004 ? 'Por cobrar' : 'Liquidado', monto: r.pendiente>0.004 ? r.pendiente : r.total, ok:r.pendiente<=0.004, pagado:r.pagado, total:r.total,
-        extra:`Cobrado <b>${money(r.pagado)}</b> de <b>${money(r.total)}</b> · <b>${npag}</b> de <b>${cs.length}</b> pagaron · <b>${money(cs.length ? r.total/cs.length : 0)}</b> c/u` })
+        extra:`Cobrado <b>${money(r.pagado)}</b> de <b>${money(r.total)}</b> · <b>${npag}</b> de <b>${cs.length}</b> pagaron<br>Cuota <b>${money(Math.max(0,...cs.map(c=>Number(c.monto))))}</b> c/u · Ampayeo <b>${money(g.costo_total)}</b>${caja([g]).esperada>0.004?` · Caja <b>+${money(caja([g]).esperada)}</b>${caja([g]).acumulada>0.004?` (ya entró ${money(caja([g]).acumulada)})`:''}`:''}` })
       + (g.notas ? `<p class="small muted" style="margin:-4px 0 12px">📝 ${esc(g.notas)}</p>` : '')
       + listaPagos(cs, filtro, c => [jName(c.jugador_id), ''])
       + `<div class="linkrow"><button type="button" class="linkish" id="editG2">Editar juego</button>${isAdmin()?'<button type="button" class="linkish danger" id="delG">Eliminar juego</button>':''}</div>`;
@@ -914,7 +966,7 @@ function verJuego(gid, modo){
       ${isAdmin()?'':'<p class="small muted" style="margin:0 0 6px">Puedes agregar asistentes; para quitar a alguien pide a un admin.</p>'}
       <div class="roster" id="eRoster"></div>
       ${addPlayerHTML('e')}
-      <div class="split"><span>Asistentes: <b id="eN">0</b></span><span>Por pelotero: <b id="eP">—</b></span><span class="small muted">Se reparte de nuevo; los pagos marcados se conservan.</span></div>
+      <div class="split"><span>Asistentes: <b id="eN">0</b></span><span>Cuota: <b id="eP">—</b></span><span>Caja: <b id="eC">—</b></span><span class="small muted">Se reparte de nuevo; los pagos marcados se conservan.</span></div>
       <div class="actions"><button class="btn primary" id="eSave">Guardar cambios</button><button type="button" class="btn" id="eCancel">Cancelar</button></div>
     </form>`;
     const f = $('#fEdit');
@@ -928,7 +980,7 @@ function verJuego(gid, modo){
       $('#eRoster').querySelectorAll('input').forEach(i => i.onchange = () => { i.parentElement.classList.toggle('on', i.checked); calc(); });
       calc();
     };
-    const calc = () => { const n = $('#eRoster').querySelectorAll('input:checked').length; $('#eN').textContent = n; $('#eP').textContent = n ? money((Number(f.costo.value)||0)/n) : '—'; };
+    const calc = () => { const n = $('#eRoster').querySelectorAll('input:checked').length; $('#eN').textContent = n; const cu = cuota(Number(f.costo.value)||0, n); $('#eP').textContent = n ? money(cu) : '—'; $('#eC').textContent = n ? '+' + money(cu*n - (Number(f.costo.value)||0)) : '—'; };
     const sug = () => { const t = tarifa(Number(f.torneo.value), f.campo.value?Number(f.campo.value):null, Number(f.namp.value)); f.costo.value = t.costo; $('#eHint').textContent = t.txt; $('#eHint').className = 'hint'+(t.base?' base':''); calc(); };
     f.torneo.onchange = () => { pintar(); }; f.campo.onchange = sug; f.namp.onchange = sug;
     f.costo.oninput = () => { $('#eHint').textContent = 'Costo capturado a mano'; $('#eHint').className = 'hint base'; calc(); };

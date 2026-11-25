@@ -38,6 +38,11 @@ El costo siempre se puede editar, también después de guardar el juego (se vuel
 - **Android / PC (Chrome o Edge)**: botón *Instalar* arriba a la derecha, o el ícono de instalar en la barra de direcciones.
 - **iPhone / iPad**: en Safari, *Compartir › Agregar a pantalla de inicio* (el botón *Instalar* muestra los pasos).
 
-## Reparto del ampayeo
+## Reparto del ampayeo y caja
 
-El costo se divide entre los peloteros marcados como asistentes. Se reparte en centavos para que la suma cuadre exacto (p. ej. $1,000 entre 6 = 4 × $166.67 + 2 × $166.66).
+El costo se divide entre los asistentes y la cuota se **redondea hacia arriba a pesos cerrados** (p. ej. $550 entre 14 = $39.29 → **$40** c/u). Lo que sobra (14 × $40 − $550 = **$10**) va a la **caja**.
+
+- *Caja esperada*: suma de los sobrantes de todos los juegos.
+- *Caja acumulada*: la parte del sobrante que ya entró (se cuenta cuando lo cobrado en el juego ya cubrió el ampayeo).
+
+Se muestra en el Dashboard (global y por torneo), en la lista de juegos y en el detalle de cada juego.

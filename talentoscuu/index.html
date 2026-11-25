@@ -611,14 +611,14 @@ function txtAdeudos(tid){
     filas.forEach(([j,o],i) => L.push(`${i+1}. ${jName(j)} — *${money(o.m)}*${o.n>1?` (${o.n} juegos)`:''}`));
     L.push(LINEA, `💵 *Total pendiente: ${money(tot)}*`, `👥 ${filas.length} jugador${filas.length!==1?'es':''} con adeudo`);
   } else L.push('✅ *¡Nadie tiene adeudos!*');
-  L.push(`💰 Caja acumulada: ${money(cj.acumulada)}`, '', `🙏 _Favor de ponerse al corriente con el mánager. ¡Gracias!_`);
+  L.push(`💰 Caja acumulada: ${money(cj.acumulada)}`);
   return L.join('\n');
 }
 function txtRecordatorio(jid, cs, juegosMap){
   const pend = cs.filter(c=>!c.pagado), tot = pend.reduce((s,c)=>s+Number(c.monto),0);
   return [`⚾ *TALENTOS CUU*`, `Hola 👋, te compartimos el adeudo de ampayeo de *${jName(jid)}*:`, LINEA,
     ...pend.map(c => { const g = juegosMap.get(c.juego_id); return `• ${fdateW(g.fecha)} vs ${g.rival} — *${money(c.monto)}*`; }),
-    LINEA, `💵 *Total: ${money(tot)}*`, '', `🙏 _Puedes entregarlo al mánager. ¡Gracias!_`].join('\n');
+    LINEA, `💵 *Total: ${money(tot)}*`].join('\n');
 }
 
 // ---------- Dashboard ----------

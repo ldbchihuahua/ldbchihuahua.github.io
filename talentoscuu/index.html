@@ -588,12 +588,12 @@ function txtJuego(g){
   ];
   if (pend.length) {
     L.push(`⏳ *PENDIENTES (${pend.length}) · ${money(r.pendiente)}*`);
-    pend.forEach((c,i) => L.push(`${i+1}. ${jName(c.jugador_id)}${Number(c.monto)!==cu ? ' — '+money(c.monto) : ''}`));
+    pend.forEach((c,i) => L.push(`${i+1}. ${jName(c.jugador_id)} — *${money(c.monto)}*`));
     L.push('');
   }
   if (pag.length) {
-    L.push(`✅ *PAGARON (${pag.length})*`);
-    pag.forEach(c => L.push(`▫️ ${jName(c.jugador_id)}`));
+    L.push(`✅ *PAGARON (${pag.length}) · ${money(r.pagado)}*`);
+    pag.forEach((c,i) => L.push(`${i+1}. ${jName(c.jugador_id)} — ${money(c.monto)} ✔️`));
     L.push('');
   }
   if (!pend.length) L.push('🎉 *¡Juego liquidado, gracias a todos!*', '');

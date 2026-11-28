@@ -85,10 +85,10 @@
    "campo": "Estadio Almanza",
    "local": "uchb",
    "visita": "bachilleres",
-   "cl": null,
-   "cv": null,
-   "estado": "",
-   "nota": ""
+   "cl": 7,
+   "cv": 0,
+   "estado": "forfeit",
+   "nota": "Gana UCHB por forfeit (7-0)"
   },
   {
    "fecha": "2026-11-26",

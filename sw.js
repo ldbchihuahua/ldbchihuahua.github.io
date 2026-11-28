@@ -1,6 +1,6 @@
 // LDB Chihuahua: funciona sin señal. La página y los resultados se buscan primero en internet
 // (para ver siempre lo más nuevo) y, si no hay conexión, se usan los guardados.
-const CACHE = 'ldb-v2';
+const CACHE = 'ldb-v3';
 const PRECACHE = ['./', 'index.html', 'manifest.webmanifest', 'resultados.json',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
   'equipos/dorados.png', 'equipos/guerreros.png', 'equipos/bachilleres.png',
@@ -15,6 +15,8 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
+  // La app de Talentos CUU tiene su propio service worker: no la tocamos.
+  if (new URL(req.url).pathname.includes('/talentoscuu/')) return;
   const fresh = req.mode === 'navigate' || /\/(index\.html|resultados\.json)?$/.test(new URL(req.url).pathname) || req.url.endsWith('resultados.json');
   if (fresh) {
     e.respondWith(fetch(req).then(r => { const cp = r.clone(); caches.open(CACHE).then(c => c.put(req, cp)); return r; })

@@ -764,7 +764,7 @@ answer(KB[2]);av.classList.remove("speaking");
   btn.addEventListener("click",open);
   window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;if(!back.hidden)open()});
   window.addEventListener("appinstalled",()=>{btn.hidden=true;back.hidden=true;document.body.style.overflow=""});
-  navigator.serviceWorker.register("sw.js").then(()=>{
+  navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(reg=>{reg.update().catch(()=>{});
     btn.hidden=false;
     let snooze=0;try{snooze=+localStorage.getItem("ldbInstallSnooze")||0}catch(e){}
     if(Date.now()>snooze&&!(os==="computadora"&&br==="Firefox"))setTimeout(()=>{if(back.hidden)open()},4000);
